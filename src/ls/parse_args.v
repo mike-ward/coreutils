@@ -6,6 +6,11 @@ import flag
 const app_name = 'ls'
 
 struct Args {
+	all              bool
+	almost_all       bool
+	group_dirs_first bool
+	list_by_lines    bool
+	other_args       []string
 }
 
 fn parse_args(args []string) Args {
@@ -21,12 +26,13 @@ fn parse_args(args []string) Args {
 	eol := common.eol()
 	wrap := eol + flag.space
 
-	fp.bool('all', `a`, false, 'do not ignore entries starting with .')
-	fp.bool('almost-all', `A`, false, 'do not list implied . and ..')
-	fp.bool('group-directories-first', ` `, false, 'group directories before files;${wrap}' +
+	all := fp.bool('all', `a`, false, 'do not ignore entries starting with .')
+	almost_all := fp.bool('almost-all', `A`, false, 'do not list implied . and ..')
+	group_dirs_first := fp.bool('group-directories-first', ` `, false,
+		'group directories before files;${wrap}' +
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
-
+	list_by_lines := fp.bool('', `x`, false, 'list entries by lines instead of by columns')
 	fp.footer("
 
 		The SIZE argument is an integer and optional unit (example: 10K is 10*1024).
@@ -49,16 +55,18 @@ fn parse_args(args []string) Args {
 		Exit status:
 		 0  if OK,
 		 1  if minor problems (e.g., cannot access subdirectory),
-		 2  if serious trouble (e.g., cannot access command-line argument).
-
-		GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
-		Full documentation <https://www.gnu.org/software/coreutils/ls>
-		or available locally via: info '(coreutils) ls invocation'".trim_indent())
+		 2  if serious trouble (e.g., cannot access command-line argument).".trim_indent())
 
 	fp.footer(common.coreutils_footer())
-	fp.finalize() or { exit_error(err.msg()) }
+	other_args := fp.finalize() or { exit_error(err.msg()) }
 
-	return Args{}
+	return Args{
+		all: all
+		almost_all: almost_all
+		group_dirs_first: group_dirs_first
+		list_by_lines: list_by_lines
+		other_args: other_args
+	}
 }
 
 @[noreturn]
