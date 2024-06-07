@@ -1,5 +1,6 @@
 import os
 import term
+import time
 import v.mathutil
 
 const column_max = 12 // limit on wide displays
@@ -27,11 +28,12 @@ fn format(entries []Entry, args Args) []Row {
 }
 
 fn format_long_listing(entries []Entry, args Args) []Row {
-	mut rows := []Row{}
 	longest_nlink := longest_nlink_len(entries)
 	longest_owner_name := longest_owner_name_len(entries)
 	longest_group_name := longest_group_name_len(entries)
 	longest_size := longest_size_len(entries)
+
+	mut rows := []Row{}
 
 	for entry in entries {
 		mut cols := []Column{}
@@ -75,6 +77,33 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			content: entry.stat.size.str()
 			width: longest_size
 			right_align: true
+		}
+
+		// spacer
+		cols << spacer()
+
+		// month
+		tm := time.unix(entry.stat.ctime).local()
+		cols << Column{
+			content: tm.smonth()
+			width: 4
+		}
+
+		// day
+		cols << Column{
+			content: tm.day.str()
+			width: 2
+			right_align: true
+		}
+
+		// spacer
+		cols << spacer()
+
+		// HH:MM
+
+		cols << Column{
+			content: tm.hhmm()
+			width: 5
 		}
 
 		// spacer
