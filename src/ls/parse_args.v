@@ -10,7 +10,7 @@ struct Args {
 	almost_all       bool
 	group_dirs_first bool
 	list_by_lines    bool
-	other_args       []string
+	files            []string
 }
 
 fn parse_args(args []string) Args {
@@ -58,14 +58,14 @@ fn parse_args(args []string) Args {
 		 2  if serious trouble (e.g., cannot access command-line argument).".trim_indent())
 
 	fp.footer(common.coreutils_footer())
-	other_args := fp.finalize() or { exit_error(err.msg()) }
+	files := fp.finalize() or { exit_error(err.msg()) }
 
 	return Args{
 		all: all
 		almost_all: almost_all
 		group_dirs_first: group_dirs_first
 		list_by_lines: list_by_lines
-		other_args: other_args
+		files: if files.len == 0 { ['.'] } else { files }
 	}
 }
 
