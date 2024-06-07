@@ -11,8 +11,8 @@ mut:
 }
 
 struct Column {
-	name  string
-	width int
+	content string
+	width   int
 }
 
 fn format(entries []Entry, args Args) []Row {
@@ -30,13 +30,15 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	for entry in entries {
 		mut cols := []Column{}
 		cols << Column{
-			name: permissions(entry)
+			content: permissions(entry)
 			width: 11
 		}
 		cols << Column{
-			name: entry.name
+			content: entry.name
 		}
-		rows << Row{columns: cols}
+		rows << Row{
+			columns: cols
+		}
 	}
 	return rows
 }
@@ -70,7 +72,7 @@ fn format_by_columns(entries []Entry, args Args) []Row {
 			idx := r + c * max_rows
 			if idx < entries.len {
 				rows[r].columns << Column{
-					name: entries[idx].name
+					content: entries[idx].name
 					width: len
 				}
 			}
@@ -90,7 +92,7 @@ fn format_by_lines(entries []Entry, args Args) []Row {
 			rows << Row{}
 		}
 		rows[rows.len - 1].columns << Column{
-			name: entry.name
+			content: entry.name
 			width: len
 		}
 	}
@@ -102,7 +104,7 @@ fn format_one_per_line(entries []Entry, args Args) []Row {
 	for entry in entries {
 		rows << Row{
 			columns: [Column{
-				name: entry.name
+				content: entry.name
 			}]
 		}
 	}
@@ -114,7 +116,7 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 	last := entries.len - 1
 	for i, entry in entries {
 		row[0].columns << Column{
-			name: if i < last { '${entry.name}, ' } else { entry.name }
+			content: if i < last { '${entry.name}, ' } else { entry.name }
 		}
 	}
 	return row
@@ -130,8 +132,8 @@ fn print_rows(rows []Row, args Args) {
 }
 
 fn print_column(c Column) {
-	print(c.name)
-	pad := c.width - c.name.len
+	print(c.content)
+	pad := c.width - c.content.len
 	if pad > 0 {
 		print(' '.repeat(pad))
 	}

@@ -67,67 +67,67 @@ fn test_by_column() {
 	assert format_by_columns(test_entries, Args{}) == [
 		Row{
 			columns: [Column{
-				name: '1.v'
+				content: '1.v'
 				width: 7
 			}, Column{
-				name: '3.v'
+				content: '3.v'
 				width: 7
 			}, Column{
-				name: '2.v'
+				content: '2.v'
 				width: 7
 			}, Column{
-				name: '4.v'
+				content: '4.v'
 				width: 7
 			}, Column{
-				name: '6.v'
+				content: '6.v'
 				width: 7
 			}, Column{
-				name: '8.v'
+				content: '8.v'
 				width: 7
 			}, Column{
-				name: '10.v'
+				content: '10.v'
 				width: 7
 			}, Column{
-				name: '12.v'
+				content: '12.v'
 				width: 7
 			}, Column{
-				name: '14.v'
+				content: '14.v'
 				width: 7
 			}, Column{
-				name: '16.v'
+				content: '16.v'
 				width: 7
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '2.v'
+				content: '2.v'
 				width: 7
 			}, Column{
-				name: '1.v'
+				content: '1.v'
 				width: 7
 			}, Column{
-				name: '3.v'
+				content: '3.v'
 				width: 7
 			}, Column{
-				name: '5.v'
+				content: '5.v'
 				width: 7
 			}, Column{
-				name: '7.v'
+				content: '7.v'
 				width: 7
 			}, Column{
-				name: '9.v'
+				content: '9.v'
 				width: 7
 			}, Column{
-				name: '11.v'
+				content: '11.v'
 				width: 7
 			}, Column{
-				name: '13.v'
+				content: '13.v'
 				width: 7
 			}, Column{
-				name: '15.v'
+				content: '15.v'
 				width: 7
 			}, Column{
-				name: '17.v'
+				content: '17.v'
 				width: 7
 			}]
 		},
@@ -138,67 +138,67 @@ fn test_format_by_lines() {
 	assert format_by_lines(test_entries, Args{ list_by_lines: true }) == [
 		Row{
 			columns: [Column{
-				name: '1.v'
+				content: '1.v'
 				width: 7
 			}, Column{
-				name: '2.v'
+				content: '2.v'
 				width: 7
 			}, Column{
-				name: '3.v'
+				content: '3.v'
 				width: 7
 			}, Column{
-				name: '1.v'
+				content: '1.v'
 				width: 7
 			}, Column{
-				name: '2.v'
+				content: '2.v'
 				width: 7
 			}, Column{
-				name: '3.v'
+				content: '3.v'
 				width: 7
 			}, Column{
-				name: '4.v'
+				content: '4.v'
 				width: 7
 			}, Column{
-				name: '5.v'
+				content: '5.v'
 				width: 7
 			}, Column{
-				name: '6.v'
+				content: '6.v'
 				width: 7
 			}, Column{
-				name: '7.v'
+				content: '7.v'
 				width: 7
 			}, Column{
-				name: '8.v'
+				content: '8.v'
 				width: 7
 			}, Column{
-				name: '9.v'
+				content: '9.v'
 				width: 7
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '10.v'
+				content: '10.v'
 				width: 7
 			}, Column{
-				name: '11.v'
+				content: '11.v'
 				width: 7
 			}, Column{
-				name: '12.v'
+				content: '12.v'
 				width: 7
 			}, Column{
-				name: '13.v'
+				content: '13.v'
 				width: 7
 			}, Column{
-				name: '14.v'
+				content: '14.v'
 				width: 7
 			}, Column{
-				name: '15.v'
+				content: '15.v'
 				width: 7
 			}, Column{
-				name: '16.v'
+				content: '16.v'
 				width: 7
 			}, Column{
-				name: '17.v'
+				content: '17.v'
 				width: 7
 			}]
 		},
@@ -209,64 +209,64 @@ fn test_with_commas() {
 	assert format_with_commas(test_entries, Args{}) == [
 		Row{
 			columns: [Column{
-				name: '1.v, '
+				content: '1.v, '
 				width: 0
 			}, Column{
-				name: '2.v, '
+				content: '2.v, '
 				width: 0
 			}, Column{
-				name: '3.v, '
+				content: '3.v, '
 				width: 0
 			}, Column{
-				name: '1.v, '
+				content: '1.v, '
 				width: 0
 			}, Column{
-				name: '2.v, '
+				content: '2.v, '
 				width: 0
 			}, Column{
-				name: '3.v, '
+				content: '3.v, '
 				width: 0
 			}, Column{
-				name: '4.v, '
+				content: '4.v, '
 				width: 0
 			}, Column{
-				name: '5.v, '
+				content: '5.v, '
 				width: 0
 			}, Column{
-				name: '6.v, '
+				content: '6.v, '
 				width: 0
 			}, Column{
-				name: '7.v, '
+				content: '7.v, '
 				width: 0
 			}, Column{
-				name: '8.v, '
+				content: '8.v, '
 				width: 0
 			}, Column{
-				name: '9.v, '
+				content: '9.v, '
 				width: 0
 			}, Column{
-				name: '10.v, '
+				content: '10.v, '
 				width: 0
 			}, Column{
-				name: '11.v, '
+				content: '11.v, '
 				width: 0
 			}, Column{
-				name: '12.v, '
+				content: '12.v, '
 				width: 0
 			}, Column{
-				name: '13.v, '
+				content: '13.v, '
 				width: 0
 			}, Column{
-				name: '14.v, '
+				content: '14.v, '
 				width: 0
 			}, Column{
-				name: '15.v, '
+				content: '15.v, '
 				width: 0
 			}, Column{
-				name: '16.v, '
+				content: '16.v, '
 				width: 0
 			}, Column{
-				name: '17.v'
+				content: '17.v'
 				width: 0
 			}]
 		},
@@ -277,121 +277,121 @@ fn test_format_one_per_line() {
 	assert format_one_per_line(test_entries, Args{}) == [
 		Row{
 			columns: [Column{
-				name: '1.v'
+				content: '1.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '2.v'
+				content: '2.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '3.v'
+				content: '3.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '1.v'
+				content: '1.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '2.v'
+				content: '2.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '3.v'
+				content: '3.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '4.v'
+				content: '4.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '5.v'
+				content: '5.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '6.v'
+				content: '6.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '7.v'
+				content: '7.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '8.v'
+				content: '8.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '9.v'
+				content: '9.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '10.v'
+				content: '10.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '11.v'
+				content: '11.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '12.v'
+				content: '12.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '13.v'
+				content: '13.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '14.v'
+				content: '14.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '15.v'
+				content: '15.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '16.v'
+				content: '16.v'
 				width: 0
 			}]
 		},
 		Row{
 			columns: [Column{
-				name: '17.v'
+				content: '17.v'
 				width: 0
 			}]
 		},
