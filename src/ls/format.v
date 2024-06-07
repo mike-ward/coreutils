@@ -14,17 +14,22 @@ struct Column {
 }
 
 fn format(entries []Entry, args Args) []Row {
-	return match args.list_by_lines {
-		true { format_by_lines(entries, args) }
+	return match true {
+		args.long_format { format_long_listing(entries, args) }
+		args.list_by_lines { format_by_lines(entries, args) }
 		else { format_by_columns(entries, args) }
 	}
+}
+
+fn format_long_listing(entries []Entry, args Args) []Row {
+	return []Row{}
 }
 
 fn format_by_columns(entries []Entry, args Args) []Row {
 	len := entries.max_name_len() + column_spacing
 	width, _ := term.get_terminal_size()
 	max_cols := width / len
-	max_rows := entries.len / max_cols + 1
+	max_rows := entries.len / max_cols
 	mut rows := []Row{}
 
 	for r := 0; r < max_rows; r += 1 {
@@ -60,7 +65,7 @@ fn format_by_lines(entries []Entry, args Args) []Row {
 	return rows
 }
 
-fn print_formatted(rows []Row, args Args) {
+fn print_rows(rows []Row, args Args) {
 	for row in rows {
 		for col in row.columns {
 			print_column(col)

@@ -10,6 +10,8 @@ struct Args {
 	almost_all       bool
 	group_dirs_first bool
 	list_by_lines    bool
+	long_format      bool
+	reverse          bool
 	files            []string
 }
 
@@ -32,7 +34,10 @@ fn parse_args(args []string) Args {
 		'group directories before files;${wrap}' +
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
+	long_format := fp.bool('', `l`, false, 'use long listing format')
+	reverse := fp.bool('reverse', `r`, false, 'reverse order while sorting')
 	list_by_lines := fp.bool('', `x`, false, 'list entries by lines instead of by columns')
+
 	fp.footer("
 
 		The SIZE argument is an integer and optional unit (example: 10K is 10*1024).
@@ -65,6 +70,8 @@ fn parse_args(args []string) Args {
 		almost_all: almost_all
 		group_dirs_first: group_dirs_first
 		list_by_lines: list_by_lines
+		long_format: long_format
+		reverse: reverse
 		files: if files.len == 0 { ['.'] } else { files }
 	}
 }
