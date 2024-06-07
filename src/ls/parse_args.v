@@ -12,6 +12,8 @@ struct Args {
 	list_by_lines    bool
 	long_format      bool
 	reverse          bool
+	one_per_line     bool
+	with_commas      bool
 	files            []string
 }
 
@@ -35,8 +37,10 @@ fn parse_args(args []string) Args {
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
 	long_format := fp.bool('', `l`, false, 'use long listing format')
+	with_commas := fp.bool('', `m`, false, 'fill width with a comma separated list of entries')
 	reverse := fp.bool('reverse', `r`, false, 'reverse order while sorting')
 	list_by_lines := fp.bool('', `x`, false, 'list entries by lines instead of by columns')
+	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	fp.footer("
 
@@ -72,6 +76,8 @@ fn parse_args(args []string) Args {
 		list_by_lines: list_by_lines
 		long_format: long_format
 		reverse: reverse
+		one_per_line: one_per_line
+		with_commas: with_commas
 		files: if files.len == 0 { ['.'] } else { files }
 	}
 }
