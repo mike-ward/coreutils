@@ -1,6 +1,8 @@
+import os
 import term
 import v.mathutil
 
+const column_max = 12 // wide displays look silly otherwise
 const column_spacing = 3 // space between columns
 
 struct Row {
@@ -24,13 +26,41 @@ fn format(entries []Entry, args Args) []Row {
 }
 
 fn format_long_listing(entries []Entry, args Args) []Row {
-	return []Row{}
+	mut rows := []Row{}
+	for entry in entries {
+		mut cols := []Column{}
+		cols << Column{
+			name: permissions(entry)
+			width: 11
+		}
+		cols << Column{
+			name: entry.name
+		}
+		rows << Row{columns: cols}
+	}
+	return rows
+}
+
+fn permissions(entry Entry) string {
+	mode := entry.stat.get_mode()
+	d := if entry.dir { 'd' } else { '.' }
+	owner := file_permission(mode.owner)
+	group := file_permission(mode.group)
+	other := file_permission(mode.others)
+	return '${d}${owner}${group}${other}'
+}
+
+fn file_permission(file_permission os.FilePermission) string {
+	r := if file_permission.read { 'r' } else { '-' }
+	w := if file_permission.write { 'w' } else { '-' }
+	x := if file_permission.execute { 'x' } else { '-' }
+	return '${r}${w}${x}'
 }
 
 fn format_by_columns(entries []Entry, args Args) []Row {
 	len := entries.max_name_len() + column_spacing
 	width, _ := term.get_terminal_size()
-	max_cols := width / len
+	max_cols := mathutil.min(width / len, column_max)
 	max_rows := entries.len / max_cols + 1
 	mut rows := []Row{}
 
@@ -52,7 +82,7 @@ fn format_by_columns(entries []Entry, args Args) []Row {
 fn format_by_lines(entries []Entry, args Args) []Row {
 	len := entries.max_name_len() + column_spacing
 	width, _ := term.get_terminal_size()
-	max_cols := width / len
+	max_cols := mathutil.min(width / len, column_max)
 	mut rows := []Row{}
 
 	for i, entry in entries {
