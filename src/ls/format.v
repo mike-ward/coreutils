@@ -98,7 +98,7 @@ fn print_rows(rows []Row, args Args) {
 }
 
 fn print_column(c Column) {
-	pad := c.width - c.content.len
+	pad := c.width - c.content.runes().len
 	if c.right_align && pad > 0 {
 		print(' '.repeat(pad))
 	}

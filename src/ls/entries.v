@@ -18,18 +18,21 @@ struct Entry {
 fn get_entries(args Args) []Entry {
 	wd := os.getwd()
 	defer { cd(wd) }
+
+	files := if args.files.len == 0 {
+		os.ls('.') or { exit_error(err.msg()) }
+	} else {
+		args.files
+	}
+
 	mut entries := []Entry{}
-	files := if args.files.len == 0 { os.ls('.') or { [] } } else { args.files }
 
 	for file in files {
-		cd(wd)
-		// handle ., .., ../, ../.., etc.
-		if file.contains_only('./') {
-			other_files := os.ls(file) or { [] }
+		if os.is_dir(file) {
+			other_files := os.ls(file) or { exit_error(err.msg()) }
 			cd(file)
-			for other in other_files {
-				entries << make_entry(other, args)
-			}
+			entries << other_files.map(make_entry(it, args))
+			cd(wd)
 			continue
 		}
 		entries << make_entry(file, args)
@@ -38,7 +41,7 @@ fn get_entries(args Args) []Entry {
 }
 
 fn make_entry(file string, args Args) Entry {
-	stat := os.stat(file) or { exit_error(err.msg()) }
+	stat := os.lstat(file) or { exit_error(err.msg()) }
 	is_dir := os.is_dir(file)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 	return Entry{
@@ -58,12 +61,12 @@ fn cd(path string) {
 
 fn readable_size(size u64, si bool) string {
 	kb := if si { f64(1000) } else { f64(1024) }
-	bytes := if si { 'B' } else { '' }
 	mut sz := f64(size)
 	for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z'] {
 		if sz < kb {
-			round_up := if unit.len > 0 { sz + .05 } else { sz }
+			round_up := if unit.len > 0 { sz + .049999 } else { sz }
 			readable := math.round_sig(round_up, 1).str().trim_string_right('.0')
+			bytes := if si && unit.len > 0 { 'B' } else { '' }
 			return '${readable}${unit}${bytes}'
 		}
 		sz /= kb
