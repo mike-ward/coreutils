@@ -18,10 +18,11 @@ fn get_entries(args Args) []Entry {
 	for path in paths {
 		full_path := os.join_path(ls_path, path)
 		stat := os.stat(full_path) or { continue }
+		is_dir := os.is_dir(full_path)
 		entries << Entry{
-			name: path
+			name: path + if is_dir && args.dir_indicator { '/' } else { '' }
 			stat: stat
-			dir: os.is_dir(full_path)
+			dir: is_dir
 			file: os.is_file(full_path)
 			link: os.is_link(full_path)
 			exe: os.is_executable(full_path)

@@ -6,15 +6,28 @@ import flag
 const app_name = 'ls'
 
 struct Args {
-	all              bool
-	almost_all       bool
-	group_dirs_first bool
-	list_by_lines    bool
-	long_format      bool
-	reverse          bool
-	one_per_line     bool
-	with_commas      bool
-	files            []string
+	// display options
+	long_format   bool
+	list_by_lines bool
+	one_per_line  bool
+	dir_indicator bool
+	with_commas   bool
+	//
+	// filtering and sorting option
+	all          bool
+	dirs_first   bool
+	sort_none    bool
+	sort_size    bool
+	sort_time    bool
+	sort_natural bool
+	sort_ext     bool
+	sort_width   bool
+	sort_reverse bool
+	//
+	// long view options
+	no_permissions bool
+
+	files []string
 }
 
 fn parse_args(args []string) Args {
@@ -31,14 +44,18 @@ fn parse_args(args []string) Args {
 	wrap := eol + flag.space
 
 	all := fp.bool('all', `a`, false, 'do not ignore entries starting with .')
-	almost_all := fp.bool('almost-all', `A`, false, 'do not list implied . and ..')
-	group_dirs_first := fp.bool('group-directories-first', ` `, false,
+	dirs_first := fp.bool('group-directories-first', ` `, false,
 		'group directories before files;${wrap}' +
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
 	long_format := fp.bool('', `l`, false, 'use long listing format')
 	with_commas := fp.bool('', `m`, false, 'fill width with a comma separated list of entries')
-	reverse := fp.bool('reverse', `r`, false, 'reverse order while sorting')
+	dir_indicator := fp.bool('dir-indicator', `p`, false, 'append / indicator to directories')
+	sort_reverse := fp.bool('reverse', `r`, false, 'reverse order while sorting')
+	sort_size := fp.bool('', `S`, false, 'sort by file size, largest first')
+	sort_time := fp.bool('', `t`, false, 'sort by time, newest first; see --time')
+	sort_width := fp.bool('', `W`, false, 'sort by width, shortest first')
+	sort_ext := fp.bool('', `X`, false, 'sort by entry extension')
 	list_by_lines := fp.bool('', `x`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
@@ -71,13 +88,17 @@ fn parse_args(args []string) Args {
 
 	return Args{
 		all: all
-		almost_all: almost_all
-		group_dirs_first: group_dirs_first
+		dirs_first: dirs_first
 		list_by_lines: list_by_lines
 		long_format: long_format
-		reverse: reverse
 		one_per_line: one_per_line
 		with_commas: with_commas
+		dir_indicator: dir_indicator
+		sort_reverse: sort_reverse
+		sort_size: sort_size
+		sort_time: sort_time
+		sort_width: sort_width
+		sort_ext: sort_ext
 		files: if files.len == 0 { ['.'] } else { files }
 	}
 }
