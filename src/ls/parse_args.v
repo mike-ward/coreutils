@@ -26,6 +26,7 @@ struct Args {
 	//
 	// long view options
 	no_permissions bool
+	human_readable bool
 
 	files []string
 }
@@ -48,6 +49,7 @@ fn parse_args(args []string) Args {
 		'group directories before files;${wrap}' +
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
+	human_readable := fp.bool('human-readable', `h`, false, 'with -l and -s, print sizes like 1K 234M 2G etc.')
 	long_format := fp.bool('', `l`, false, 'use long listing format')
 	with_commas := fp.bool('', `m`, false, 'fill width with a comma separated list of entries')
 	dir_indicator := fp.bool('dir-indicator', `p`, false, 'append / indicator to directories')
@@ -99,6 +101,7 @@ fn parse_args(args []string) Args {
 		sort_time: sort_time
 		sort_width: sort_width
 		sort_ext: sort_ext
+		human_readable: human_readable
 		files: if files.len == 0 { ['.'] } else { files }
 	}
 }

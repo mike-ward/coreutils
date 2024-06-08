@@ -6,7 +6,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_nlink := longest_nlink_len(entries)
 	longest_owner_name := longest_owner_name_len(entries)
 	longest_group_name := longest_group_name_len(entries)
-	longest_size := longest_size_len(entries)
+	longest_size := longest_size_len(entries, args.human_readable)
 
 	mut rows := []Row{}
 
@@ -50,7 +50,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// size
 		cols << Column{
-			content: entry.stat.size.str()
+			content: if args.human_readable { entry.r_size } else { entry.stat.size.str() }
 			width: longest_size
 			right_align: true
 		}
@@ -144,11 +144,14 @@ fn longest_group_name_len(entries []Entry) int {
 	return max
 }
 
-fn longest_size_len(entries []Entry) int {
+fn longest_size_len(entries []Entry, human_readable bool) int {
 	mut max := 0
 	for entry in entries {
-		max = mathutil.max(max, entry.stat.size.str().len)
+		if human_readable {
+			max = mathutil.max(max, entry.r_size.len)
+		} else {
+			max = mathutil.max(max, entry.stat.size.str().len)
+		}
 	}
 	return max
 }
-
