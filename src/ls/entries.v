@@ -11,27 +11,49 @@ struct Entry {
 	r_size string
 }
 
+// In order to match GNU ls
+// 	 ./ and ../  list files without the ./ and ../ prefixes
+//   ./* and ../* list files WITH the ./ and ../ prefixes
+//   nothing implies ./
 fn get_entries(args Args) []Entry {
-	ls_path := os.join_path(os.getwd(), args.files[0])
-	paths := os.ls(ls_path) or { [] }
-
+	wd := os.getwd()
+	defer { cd(wd) }
 	mut entries := []Entry{}
+	files := if args.files.len == 0 { os.ls('.') or { [] } } else { args.files }
 
-	for path in paths {
-		full_path := os.join_path(ls_path, path)
-		stat := os.stat(full_path) or { continue }
-		is_dir := os.is_dir(full_path)
-		entries << Entry{
-			name: path + if is_dir && args.dir_indicator { '/' } else { '' }
-			stat: stat
-			dir: is_dir
-			file: os.is_file(full_path)
-			link: os.is_link(full_path)
-			exe: os.is_executable(full_path)
-			r_size: readable_size(stat.size, false)
+	for file in files {
+		cd(wd)
+		// handle ., .., ../, ../.., etc.
+		if file.contains_only('./') {
+			other_files := os.ls(file) or { [] }
+			cd(file)
+			for other in other_files {
+				entries << make_entry(other, args)
+			}
+			continue
 		}
+		entries << make_entry(file, args)
 	}
 	return entries
+}
+
+fn make_entry(file string, args Args) Entry {
+	stat := os.stat(file) or { exit_error(err.msg()) }
+	is_dir := os.is_dir(file)
+	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
+	return Entry{
+		name: file + indicator
+		stat: stat
+		dir: is_dir
+		file: os.is_file(file)
+		link: os.is_link(file)
+		exe: os.is_executable(file)
+		r_size: readable_size(stat.size, false)
+	}
+}
+
+fn cd(path string) {
+	os.chdir(path) or { exit_error(err.msg()) }
 }
 
 fn readable_size(size u64, si bool) string {

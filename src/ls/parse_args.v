@@ -102,7 +102,7 @@ fn parse_args(args []string) Args {
 		sort_width: sort_width
 		sort_ext: sort_ext
 		human_readable: human_readable
-		files: if files.len == 0 { ['.'] } else { files }
+		files: files
 	}
 }
 
