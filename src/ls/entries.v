@@ -2,14 +2,16 @@ import os
 import math
 
 struct Entry {
-	name     string
-	dir_name string
-	stat     os.Stat
-	dir      bool
-	file     bool
-	link     bool
-	exe      bool
-	r_size   string
+	name      string
+	dir_name  string
+	stat      os.Stat
+	dir       bool
+	file      bool
+	link      bool
+	exe       bool
+	origin    string
+	r_size    string
+	r_size_kb string
 }
 
 // Before changing this function, try some of these edge cases with GNU ls
@@ -46,15 +48,19 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 	stat := os.lstat(file) or { exit_error(err.msg()) }
 	is_dir := os.is_dir(file)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
+	is_link := os.is_link(file)
+	target := if is_link { read_link(os.abs_path(file)) } else { '' }
 	return Entry{
 		name: file + indicator
 		dir_name: dir_name
 		stat: stat
 		dir: is_dir
 		file: os.is_file(file)
-		link: os.is_link(file)
+		link: is_link
 		exe: os.is_executable(file)
+		origin: target
 		r_size: readable_size(stat.size, false)
+		r_size_kb: readable_size(stat.size, true)
 	}
 }
 

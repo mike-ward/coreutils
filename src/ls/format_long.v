@@ -91,7 +91,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// file name
 		cols << Column{
-			content: entry.name
+			content: print_entry_name(entry)
 		}
 
 		// create a row and add it
@@ -105,6 +105,13 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 fn spacer() Column {
 	return Column{
 		content: ' '
+	}
+}
+
+fn print_entry_name(entry Entry) string {
+	return match true {
+		entry.link { '${entry.name} -> ${entry.origin}' }
+		else { entry.name }
 	}
 }
 

@@ -1,6 +1,13 @@
 fn filter(entries []Entry, args Args) []Entry {
+	mut filtered := entries.clone()
+
 	if !args.all {
-		return entries.filter(it.name.starts_with('../') || !it.name.starts_with('.'))
+		filtered = entries.filter(it.name.starts_with('../') || !it.name.starts_with('.'))
 	}
-	return entries
+
+	if args.only_dirs {
+		filtered = filtered.filter(it.dir)
+	}
+
+	return filtered
 }

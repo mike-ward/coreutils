@@ -16,6 +16,7 @@ struct Args {
 	// filtering and sorting option
 	all          bool
 	dirs_first   bool
+	only_dirs    bool
 	sort_none    bool
 	sort_size    bool
 	sort_time    bool
@@ -37,14 +38,14 @@ fn parse_args(args []string) Args {
 	fp.application(app_name)
 	fp.version(common.coreutils_version())
 	fp.skip_executable()
-	fp.description('
-	List information about the FILEs (the current directory by default).
-	Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.'.trim_indent())
+	fp.description('List information about the FILEs (the current directory by default).')
 
 	eol := common.eol()
 	wrap := eol + flag.space
 
 	all := fp.bool('all', `a`, false, 'do not ignore entries starting with .')
+	list_by_cols := fp.bool('', `C`, true, 'list entries by columns')
+	only_dirs := fp.bool('only-dirs', `D`, false, 'list only directories')
 	dirs_first := fp.bool('group-directories-first', ` `, false,
 		'group directories before files;${wrap}' +
 		'can be augmented with a --sort option, but any${wrap}' +
@@ -91,7 +92,8 @@ fn parse_args(args []string) Args {
 	return Args{
 		all: all
 		dirs_first: dirs_first
-		list_by_lines: list_by_lines
+		only_dirs: only_dirs
+		list_by_lines: list_by_lines || !list_by_cols
 		long_format: long_format
 		one_per_line: one_per_line
 		with_commas: with_commas
