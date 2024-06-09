@@ -3,6 +3,7 @@ import math
 
 struct Entry {
 	name   string
+	group  string
 	stat   os.Stat
 	dir    bool
 	file   bool
@@ -11,14 +12,13 @@ struct Entry {
 	r_size string
 }
 
-// In order to match GNU ls
-// 	 ./ and ../  list files without the ./ and ../ prefixes
-//   ./* and ../* list files WITH the ./ and ../ prefixes
-//   nothing implies ./
+// Before changing this function, try some of these edge cases with GNU ls
+// 		ls ../..
+//      ls ../../*txt
+//      ls ../..*
+// the last one is particularly interesting in that it
+// walks the subdirs and prints each subdir separately.
 fn get_entries(args Args) []Entry {
-	wd := os.getwd()
-	defer { cd(wd) }
-
 	files := if args.files.len == 0 {
 		os.ls('.') or { exit_error(err.msg()) }
 	} else {
@@ -26,26 +26,29 @@ fn get_entries(args Args) []Entry {
 	}
 
 	mut entries := []Entry{}
+	wd := os.getwd()
+	defer { cd(wd) }
 
 	for file in files {
 		if os.is_dir(file) {
 			other_files := os.ls(file) or { exit_error(err.msg()) }
 			cd(file)
-			entries << other_files.map(make_entry(it, args))
+			entries << other_files.map(make_entry(it, file, args))
 			cd(wd)
 			continue
 		}
-		entries << make_entry(file, args)
+		entries << make_entry(file, '', args)
 	}
 	return entries
 }
 
-fn make_entry(file string, args Args) Entry {
+fn make_entry(file string, group string, args Args) Entry {
 	stat := os.lstat(file) or { exit_error(err.msg()) }
 	is_dir := os.is_dir(file)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 	return Entry{
 		name: file + indicator
+		group: group
 		stat: stat
 		dir: is_dir
 		file: os.is_file(file)

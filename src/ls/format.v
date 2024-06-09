@@ -31,7 +31,7 @@ fn format(entries []Entry, args Args) []Row {
 fn format_by_columns(entries []Entry, width int, args Args) []Row {
 	len := entries.max_name_len() + column_spacing
 	max_cols := mathutil.min(width / len, column_max)
-	partial_row := entries.len % max_cols != 0 && entries.len > max_cols
+	partial_row := entries.len % max_cols != 0
 	max_rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
 	mut rows := []Row{}
 
