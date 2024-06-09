@@ -50,7 +50,11 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// size
 		cols << Column{
-			content: if args.human_readable { entry.r_size } else { entry.stat.size.str() }
+			content: match true {
+				entry.dir { '-' }
+				args.human_readable { entry.r_size }
+				else { entry.stat.size.str() }
+			}
 			width: longest_size
 			right_align: true
 		}

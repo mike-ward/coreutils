@@ -2,14 +2,14 @@ import os
 import math
 
 struct Entry {
-	name   string
-	group  string
-	stat   os.Stat
-	dir    bool
-	file   bool
-	link   bool
-	exe    bool
-	r_size string
+	name     string
+	dir_name string
+	stat     os.Stat
+	dir      bool
+	file     bool
+	link     bool
+	exe      bool
+	r_size   string
 }
 
 // Before changing this function, try some of these edge cases with GNU ls
@@ -42,13 +42,13 @@ fn get_entries(args Args) []Entry {
 	return entries
 }
 
-fn make_entry(file string, group string, args Args) Entry {
+fn make_entry(file string, dir_name string, args Args) Entry {
 	stat := os.lstat(file) or { exit_error(err.msg()) }
 	is_dir := os.is_dir(file)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 	return Entry{
 		name: file + indicator
-		group: group
+		dir_name: dir_name
 		stat: stat
 		dir: is_dir
 		file: os.is_file(file)
