@@ -46,7 +46,7 @@ count below and mark it as done in this README.md. Thanks!
 GNU coreutils. They are not 100% compatiable. If you encounter different behaviors, 
 compare against the true GNU coreutils version on the Linux-based tests first.
 
-## Completed (60/109)
+## Completed (61/109)
 
 |  Done   | Cmd       | Descripton                                       |
 | :-----: | --------- | ------------------------------------------------ |
@@ -95,7 +95,7 @@ compare against the true GNU coreutils version on the Linux-based tests first.
 |         | link      | Make a hard link via the link syscall            |
 | &check; | ln        | Make links between files                         |
 | &check; | logname   | Print current login name                         |
-|         | ls        | List directory contents                          |
+| &check; | ls        | List directory contents                          |
 | &check; | md5sum    | Print or check MD5 digests                       |
 | &check; | mkdir     | Make directories                                 |
 |         | mkfifo    | Make FIFOs (named pipes)                         |
