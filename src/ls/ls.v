@@ -15,11 +15,8 @@ fn ls(args Args) {
 		return e.group
 	})
 
-	for key, g_entries in grouped_entries {
-		if key.len > 0 {
-			println('')
-			println('${key}:')
-		}
+	for name, g_entries in grouped_entries {
+		print_group_name(name, grouped_entries.keys().len)
 		filtered := filter(g_entries, args)
 		sorted := sort(filtered, args)
 		rows := format(sorted, args)

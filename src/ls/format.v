@@ -110,6 +110,13 @@ fn print_column(c Column) {
 	}
 }
 
+fn print_group_name(name string, groups int) {
+	if name.len > 0 && groups > 1 {
+		println('')
+		println('${name}:')
+	}
+}
+
 fn (entries []Entry) max_name_len() int {
 	lengths := entries.map(it.name.len)
 	return arrays.max(lengths) or { 0 }
