@@ -1,5 +1,7 @@
 module main
 
+const term_width = 195
+
 const test_entries = [
 	Entry{
 		name: '1.v'
@@ -64,7 +66,7 @@ const test_entries = [
 ]
 
 fn test_by_column() {
-	assert format_by_columns(test_entries, Args{}) == [
+	assert format_by_columns(test_entries, term_width, Args{}) == [
 		Row{
 			columns: [Column{
 				content: '1.v'
@@ -135,7 +137,7 @@ fn test_by_column() {
 }
 
 fn test_format_by_lines() {
-	assert format_by_lines(test_entries, Args{ list_by_lines: true }) == [
+	assert format_by_lines(test_entries, term_width, Args{}) == [
 		Row{
 			columns: [Column{
 				content: '1.v'

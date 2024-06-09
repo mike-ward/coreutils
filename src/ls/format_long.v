@@ -1,6 +1,6 @@
+import arrays
 import os
 import time
-import v.mathutil
 
 fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_nlink := longest_nlink_len(entries)
@@ -121,37 +121,25 @@ fn file_permission(file_permission os.FilePermission) string {
 }
 
 fn longest_nlink_len(entries []Entry) int {
-	mut max := 0
-	for entry in entries {
-		max = mathutil.max(max, entry.stat.nlink.str().len)
-	}
-	return max
+	lengths := entries.map(it.stat.nlink.str().len)
+	return arrays.max(lengths) or { 0 }
 }
 
 fn longest_owner_name_len(entries []Entry) int {
-	mut max := 0
-	for entry in entries {
-		max = mathutil.max(max, get_owner_name(entry.stat.uid).len)
-	}
-	return max
+	lengths := entries.map(get_owner_name(it.stat.uid).len)
+	return arrays.max(lengths) or { 0 }
 }
 
 fn longest_group_name_len(entries []Entry) int {
-	mut max := 0
-	for entry in entries {
-		max = mathutil.max(max, get_group_name(entry.stat.gid).len)
-	}
-	return max
+	lengths := entries.map(get_group_name(it.stat.gid).len)
+	return arrays.max(lengths) or { 0 }
 }
 
 fn longest_size_len(entries []Entry, human_readable bool) int {
-	mut max := 0
-	for entry in entries {
-		if human_readable {
-			max = mathutil.max(max, entry.r_size.len)
-		} else {
-			max = mathutil.max(max, entry.stat.size.str().len)
-		}
-	}
-	return max
+	lengths := entries.map(if human_readable {
+		it.r_size.len
+	} else {
+		it.stat.size.str().len
+	})
+	return arrays.max(lengths) or { 0 }
 }
