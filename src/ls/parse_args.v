@@ -30,6 +30,11 @@ struct Args {
 	human_readable bool
 
 	files []string
+	// ls colors
+	ls_color_di Term_Color
+	ls_color_fi Term_Color
+	ls_color_ln Term_Color
+	ls_color_ex Term_Color
 }
 
 fn parse_args(args []string) Args {
@@ -88,6 +93,7 @@ fn parse_args(args []string) Args {
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
+	ls_colors := get_ls_colors()
 
 	return Args{
 		all: all
@@ -105,6 +111,10 @@ fn parse_args(args []string) Args {
 		sort_ext: sort_ext
 		human_readable: human_readable
 		files: files
+		ls_color_di: ls_colors['di']
+		ls_color_fi: ls_colors['fi']
+		ls_color_ln: ls_colors['ln']
+		ls_color_ex: ls_colors['ex']
 	}
 }
 
