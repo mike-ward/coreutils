@@ -106,7 +106,7 @@ fn print_rows(rows []Row, args Args) {
 }
 
 fn print_column(c Column, args Args) {
-	pad := c.width - c.content.runes().len
+	pad := c.width - term.strip_ansi(c.content).runes().len
 	if c.right_align && pad > 0 {
 		print(' '.repeat(pad))
 	}

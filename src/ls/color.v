@@ -62,27 +62,35 @@ fn make_term_color(ansi string) Term_Color {
 			'0' { bold = false }
 			'1' { bold = true }
 			'4' { ul = true }
-			'31' { fg = term.red }
-			'32' { fg = term.green }
-			'34' { fg = term.blue }
-			'35' { fg = term.magenta }
-			'36' { fg = term.cyan }
-			'37' { fg = term.gray }
-			'40' { bg = term.bg_black }
-			'41' { bg = term.bg_red }
-			'42' { bg = term.bg_green }
-			'44' { bg = term.bg_blue }
-			'46' { bg = term.bg_cyan }
-			'91' { fg = term.bright_red }
-			'92' { fg = term.bright_green }
-			'93' { fg = term.yellow }
-			'94' { fg = term.bright_blue }
-			'96' { fg = term.magenta }
-			'101' { bg = term.bright_bg_red }
-			'102' { bg = term.bright_bg_green }
-			'103' { bg = term.bg_yellow }
-			'104' { bg = term.bright_bg_blue }
-			'106' { bg = term.bright_bg_magenta }
+			'31' { fg = fgg(code) }
+			'32' { fg = fgg(code) }
+			'33' { fg = fgg(code) }
+			'34' { fg = fgg(code) }
+			'35' { fg = fgg(code) }
+			'36' { fg = fgg(code) }
+			'37' { fg = fgg(code) }
+			'40' { bg = bgg(code) }
+			'41' { bg = bgg(code) }
+			'42' { bg = bgg(code) }
+			'43' { bg = bgg(code) }
+			'44' { bg = bgg(code) }
+			'45' { bg = bgg(code) }
+			'46' { bg = bgg(code) }
+			'47' { bg = bgg(code) }
+			'90' { fg = fgg(code) }
+			'91' { fg = fgg(code) }
+			'92' { fg = fgg(code) }
+			'93' { fg = fgg(code) }
+			'94' { fg = fgg(code) }
+			'95' { fg = fgg(code) }
+			'96' { fg = fgg(code) }
+			'100' { bg = bgg(code) }
+			'101' { bg = bgg(code) }
+			'102' { bg = bgg(code) }
+			'103' { bg = bgg(code) }
+			'104' { bg = bgg(code) }
+			'105' { bg = bgg(code) }
+			'106' { bg = bgg(code) }
 			else {}
 		}
 	}
@@ -97,4 +105,16 @@ fn make_term_color(ansi string) Term_Color {
 
 fn empty_color(s string) string {
 	return s
+}
+
+fn fgg(cc string) fn (string) string {
+	return fn [cc] (msg string) string {
+		return term.format(msg, cc, '39')
+	}
+}
+
+fn bgg(cc string) fn (string) string {
+	return fn [cc] (msg string) string {
+		return term.format(msg, cc, '49')
+	}
 }

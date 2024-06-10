@@ -16,7 +16,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// permissinos
 		cols << Column{
-			content: permissions(entry)
+			content: permissions(entry, args)
 			width: permissions_width
 		}
 
@@ -116,20 +116,22 @@ fn print_entry_name(entry Entry, args Args) string {
 	}
 }
 
-fn permissions(entry Entry) string {
+fn permissions(entry Entry, args Args) string {
 	mode := entry.stat.get_mode()
-	d := if entry.dir { 'd' } else { '.' }
-	owner := file_permission(mode.owner)
-	group := file_permission(mode.group)
-	other := file_permission(mode.others)
-	return '${d}${owner}${group}${other}'
+	d := if args.colorize { color_string('d', args.ls_color_di) } else { 'd' }
+	dir := if entry.dir { d } else { '-' }
+	owner := file_permission(mode.owner, args)
+	group := file_permission(mode.group, args)
+	other := file_permission(mode.others, args)
+	return '${dir}${owner}${group}${other}'
 }
 
-fn file_permission(file_permission os.FilePermission) string {
+fn file_permission(file_permission os.FilePermission, args Args) string {
 	r := if file_permission.read { 'r' } else { '-' }
 	w := if file_permission.write { 'w' } else { '-' }
-	x := if file_permission.execute { 'x' } else { '-' }
-	return '${r}${w}${x}'
+	x := if args.colorize { color_string('x', args.ls_color_ex) } else { 'x' }
+	ex := if file_permission.execute { x } else { '-' }
+	return '${r}${w}${ex}'
 }
 
 fn longest_nlink_len(entries []Entry) int {
