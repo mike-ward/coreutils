@@ -4,39 +4,34 @@ import os
 struct Term_Color {
 	bold bool
 	ul   bool
-	fg   fn (string) string = no_color
-	bg   fn (string) string = no_color
+	fg   fn (string) string = empty_color
+	bg   fn (string) string = empty_color
+}
+
+const empty_term_color = Term_Color{
+	bold: false
+	ul: false
+	fg: empty_color
+	bg: empty_color
 }
 
 fn color_string(s string, term_color Term_Color) string {
 	mut out := term_color.fg(s)
 	out = term_color.bg(out)
-
-	if term_color.bold {
-		out = term.bold(out)
-	}
-	if term_color.ul {
-		out = term.underline(out)
-	}
-
+	out = if term_color.bold { term.bold(out) } else { out }
+	out = if term_color.ul { term.underline(out) } else { out }
 	return out
 }
 
 fn get_ls_colors() map[string]Term_Color {
 	mut color_map := map[string]Term_Color{}
+	color_map['di'] = empty_term_color
+	color_map['fi'] = empty_term_color
+	color_map['ln'] = empty_term_color
+	color_map['ex'] = empty_term_color
 
-	nothing := Term_Color{
-		bold: false
-		ul: false
-		fg: no_color
-		bg: no_color
-	}
-
-	color_map['di'] = nothing
-	color_map['fi'] = nothing
-	color_map['ln'] = nothing
-	color_map['ex'] = nothing
-
+	// example LS_COLORS
+	// di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
 	ls_colors := os.getenv('LS_COLORS')
 	fields := ls_colors.split(':')
 
@@ -54,8 +49,8 @@ fn get_ls_colors() map[string]Term_Color {
 fn make_term_color(ansi string) Term_Color {
 	mut bold := false
 	mut ul := false
-	mut fg := no_color
-	mut bg := no_color
+	mut fg := empty_color
+	mut bg := empty_color
 
 	codes := ansi.split(';')
 
@@ -97,7 +92,6 @@ fn make_term_color(ansi string) Term_Color {
 	}
 }
 
-fn no_color(s string) string {
+fn empty_color(s string) string {
 	return s
 }
-

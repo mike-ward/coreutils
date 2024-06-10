@@ -47,18 +47,20 @@ fn get_entries(args Args) []Entry {
 fn make_entry(file string, dir_name string, args Args) Entry {
 	stat := os.lstat(file) or { exit_error(err.msg()) }
 	is_dir := os.is_dir(file)
-	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 	is_link := os.is_link(file)
-	target := if is_link { read_link(os.abs_path(file)) } else { '' }
+	is_file := os.is_file(file)
+	is_exe := os.is_executable(file)
+	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
+	origin := if is_link { read_link(os.abs_path(file)) } else { '' }
 	return Entry{
 		name: file + indicator
 		dir_name: dir_name
 		stat: stat
 		dir: is_dir
-		file: os.is_file(file)
+		file: is_file
 		link: is_link
-		exe: os.is_executable(file)
-		origin: target
+		exe: is_exe
+		origin: origin
 		r_size: readable_size(stat.size, false)
 		r_size_kb: readable_size(stat.size, true)
 	}

@@ -92,6 +92,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// file name
 		cols << Column{
 			content: print_entry_name(entry, args)
+			color: get_term_color_for(entry, args)
 		}
 
 		// create a row and add it
@@ -109,17 +110,9 @@ fn spacer() Column {
 }
 
 fn print_entry_name(entry Entry, args Args) string {
-	name := match true {
+	return match true {
 		entry.link { '${entry.name} -> ${entry.origin}' }
 		else { entry.name }
-	}
-
-	return match true {
-		entry.dir { color_string(name, args.ls_color_di) }
-		entry.link { color_string(name, args.ls_color_ln) }
-		entry.file { color_string(name, args.ls_color_fi) }
-		entry.exe { color_string(name, args.ls_color_ex) }
-		else { name }
 	}
 }
 

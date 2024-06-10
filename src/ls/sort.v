@@ -56,6 +56,6 @@ fn sort(entries []Entry, args Args) []Entry {
 	for key in gentries.keys().sorted() {
 		sorted << gentries[key].sorted_with_compare(cmp)
 	}
-	
+
 	return if args.sort_reverse { sorted.reverse() } else { sorted }
 }

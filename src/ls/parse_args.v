@@ -12,6 +12,7 @@ struct Args {
 	one_per_line  bool
 	dir_indicator bool
 	with_commas   bool
+	colorize      bool
 	//
 	// filtering and sorting option
 	all          bool
@@ -50,6 +51,7 @@ fn parse_args(args []string) Args {
 
 	all := fp.bool('all', `a`, false, 'do not ignore entries starting with .')
 	list_by_cols := fp.bool('', `C`, true, 'list entries by columns')
+	colorize := fp.bool('color', ` `, false, 'color the output')
 	only_dirs := fp.bool('only-dirs', `D`, false, 'list only directories')
 	dirs_first := fp.bool('group-directories-first', ` `, false,
 		'group directories before files;${wrap}' +
@@ -103,6 +105,7 @@ fn parse_args(args []string) Args {
 		long_format: long_format
 		one_per_line: one_per_line
 		with_commas: with_commas
+		colorize: colorize
 		dir_indicator: dir_indicator
 		sort_reverse: sort_reverse
 		sort_size: sort_size

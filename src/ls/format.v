@@ -14,6 +14,7 @@ struct Column {
 	content     string
 	width       int
 	right_align bool
+	color       Term_Color = empty_term_color
 }
 
 fn format(entries []Entry, args Args) []Row {
@@ -43,6 +44,7 @@ fn format_by_columns(entries []Entry, width int, args Args) []Row {
 				rows[r].columns << Column{
 					content: entries[idx].name
 					width: len
+					color: get_term_color_for(entries[idx], args)
 				}
 			}
 		}
@@ -62,6 +64,7 @@ fn format_by_lines(entries []Entry, width int, args Args) []Row {
 		rows[rows.len - 1].columns << Column{
 			content: entry.name
 			width: len
+			color: get_term_color_for(entry, args)
 		}
 	}
 	return rows
@@ -71,9 +74,12 @@ fn format_one_per_line(entries []Entry, args Args) []Row {
 	mut rows := []Row{}
 	for entry in entries {
 		rows << Row{
-			columns: [Column{
-				content: entry.name
-			}]
+			columns: [
+				Column{
+					content: entry.name
+					color: get_term_color_for(entry, args)
+				},
+			]
 		}
 	}
 	return rows
@@ -93,18 +99,21 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 fn print_rows(rows []Row, args Args) {
 	for row in rows {
 		for col in row.columns {
-			print_column(col)
+			print_column(col, args)
 		}
 		println('')
 	}
 }
 
-fn print_column(c Column) {
+fn print_column(c Column, args Args) {
 	pad := c.width - c.content.runes().len
 	if c.right_align && pad > 0 {
 		print(' '.repeat(pad))
 	}
-	print(c.content)
+
+	content := if args.colorize { color_string(c.content, c.color) } else { c.content }
+	print(content)
+
 	if !c.right_align && pad > 0 {
 		print(' '.repeat(pad))
 	}
@@ -120,4 +129,14 @@ fn print_group_name(name string, groups int) {
 fn (entries []Entry) max_name_len() int {
 	lengths := entries.map(it.name.len)
 	return arrays.max(lengths) or { 0 }
+}
+
+fn get_term_color_for(entry Entry, args Args) Term_Color {
+	return match true {
+		entry.dir { args.ls_color_di }
+		entry.exe { args.ls_color_ex }
+		entry.link { args.ls_color_ln }
+		entry.file { args.ls_color_fi }
+		else { empty_term_color }
+	}
 }
