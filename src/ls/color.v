@@ -16,6 +16,9 @@ const empty_term_color = Term_Color{
 }
 
 fn color_string(s string, term_color Term_Color) string {
+	if !term.can_show_color_on_stdout() {
+		return s
+	}
 	mut out := term_color.fg(s)
 	out = term_color.bg(out)
 	out = if term_color.bold { term.bold(out) } else { out }

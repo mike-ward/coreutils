@@ -119,10 +119,11 @@ fn print_column(c Column, args Args) {
 	}
 }
 
-fn print_group_name(name string, groups int) {
-	if name.len > 0 && groups > 1 {
+fn print_dir_name(name string, args Args) {
+	if name.len > 0 {
 		println('')
-		println('${name}:')
+		nm := if args.colorize { color_string(name, args.ls_color_di) } else { name }
+		println('${nm}:')
 	}
 }
 
