@@ -14,7 +14,7 @@ struct Args {
 	with_commas   bool
 	colorize      bool
 	//
-	// filtering and sorting option
+	// filter, group and sorting options
 	all          bool
 	dirs_first   bool
 	only_dirs    bool
@@ -27,6 +27,7 @@ struct Args {
 	sort_reverse bool
 	//
 	// long view options
+	inode          bool
 	no_permissions bool
 	human_readable bool
 	//
@@ -60,6 +61,7 @@ fn parse_args(args []string) Args {
 		'can be augmented with a --sort option, but any${wrap}' +
 		'use of --sort=none (-U) disables grouping')
 	human_readable := fp.bool('human-readable', `h`, false, 'with -l and -s, print sizes like 1K 234M 2G etc.')
+	inode := fp.bool('inode', `i`, false, 'show inode for each file')
 	long_format := fp.bool('', `l`, false, 'use long listing format')
 	with_commas := fp.bool('', `m`, false, 'fill width with a comma separated list of entries')
 	dir_indicator := fp.bool('dir-indicator', `p`, false, 'append / indicator to directories')
@@ -101,6 +103,7 @@ fn parse_args(args []string) Args {
 		sort_time: sort_time
 		sort_width: sort_width
 		sort_ext: sort_ext
+		inode: inode
 		human_readable: human_readable
 		files: files
 		ls_color_di: ls_colors['di']

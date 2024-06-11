@@ -7,12 +7,24 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_owner_name := longest_owner_name_len(entries)
 	longest_group_name := longest_group_name_len(entries)
 	longest_size := longest_size_len(entries, args.human_readable)
+	longest_inode := longest_inode_len(entries)
 
 	mut rows := []Row{}
 
 	for entry in entries {
 		mut cols := []Column{}
 		permissions_width := 11
+
+		// inode
+		if args.inode {
+			cols << Column{
+				content: entry.stat.inode.str()
+				width: longest_inode
+				right_align: true
+			}
+
+			cols << spacer()
+		}
 
 		// permissinos
 		cols << Column{
@@ -142,5 +154,10 @@ fn longest_size_len(entries []Entry, human_readable bool) int {
 	} else {
 		it.stat.size.str().len
 	})
+	return arrays.max(lengths) or { 0 }
+}
+
+fn longest_inode_len(entries []Entry) int {
+	lengths := entries.map(it.stat.inode.str().len)
 	return arrays.max(lengths) or { 0 }
 }
