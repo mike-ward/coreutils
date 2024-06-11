@@ -27,7 +27,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			right_align: true
 		}
 
-		// spacer
 		cols << spacer()
 
 		// owner name
@@ -36,7 +35,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			width: longest_owner_name
 		}
 
-		// spacer
 		cols << spacer()
 
 		// group name
@@ -45,7 +43,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			width: longest_group_name
 		}
 
-		// spacer
 		cols << spacer()
 
 		// size
@@ -59,34 +56,14 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			right_align: true
 		}
 
-		// spacer
 		cols << spacer()
 
-		// month
-		tm := time.unix(entry.stat.ctime).local()
+		// time
 		cols << Column{
-			content: tm.smonth()
-			width: 4
+			content: time.unix(entry.stat.ctime).local().str()
 		}
 
-		// day
-		cols << Column{
-			content: tm.day.str()
-			width: 2
-			right_align: true
-		}
-
-		// spacer
 		cols << spacer()
-
-		// HH:MM
-
-		cols << Column{
-			content: tm.hhmm()
-			width: 5
-		}
-
-		// spacer
 		cols << spacer()
 
 		// file name
@@ -95,17 +72,27 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			color: get_term_color_for(entry, args)
 		}
 
-		// create a row and add it
+		// create a row and add the columns
 		rows << Row{
 			columns: cols
 		}
 	}
+
+	rows << file_count(entries.len)
 	return rows
 }
 
 fn spacer() Column {
 	return Column{
 		content: ' '
+	}
+}
+
+fn file_count(count int) Row {
+	return Row{
+		columns: [Column{
+			content: 'count: ${count}'
+		}]
 	}
 }
 
@@ -130,8 +117,8 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 	r := if file_permission.read { 'r' } else { '-' }
 	w := if file_permission.write { 'w' } else { '-' }
 	x := if args.colorize { color_string('x', args.ls_color_ex) } else { 'x' }
-	ex := if file_permission.execute { x } else { '-' }
-	return '${r}${w}${ex}'
+	e := if file_permission.execute { x } else { '-' }
+	return '${r}${w}${e}'
 }
 
 fn longest_nlink_len(entries []Entry) int {
