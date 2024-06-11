@@ -13,7 +13,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 	for entry in entries {
 		mut cols := []Column{}
-		permissions_width := 11
 
 		// inode
 		if args.inode {
@@ -29,7 +28,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// permissinos
 		cols << Column{
 			content: permissions(entry, args)
-			width: permissions_width
 		}
 
 		// hard links
@@ -71,9 +69,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		cols << spacer()
 
 		// time
-		cols << Column{
-			content: time.unix(entry.stat.ctime).local().str()
-		}
+		cols << print_time(entry, args)
 
 		cols << spacer()
 		cols << spacer()
@@ -118,11 +114,18 @@ fn print_entry_name(entry Entry, args Args) string {
 fn permissions(entry Entry, args Args) string {
 	mode := entry.stat.get_mode()
 	d := if args.colorize { color_string('d', args.ls_color_di) } else { 'd' }
-	dir := if entry.dir { d } else { '-' }
+	l := if args.colorize { color_string('l', args.ls_color_ln) } else { 'l' }
+	f := if args.colorize { color_string('f', args.ls_color_fi) } else { 'f' }
+	flag := match true {
+		entry.link { l }
+		entry.dir { d }
+		entry.file { f }
+		else { ' ' }
+	}
 	owner := file_permission(mode.owner, args)
 	group := file_permission(mode.group, args)
 	other := file_permission(mode.others, args)
-	return '${dir}${owner}${group}${other}'
+	return '${flag} ${owner} ${group} ${other} ' // want trailing space
 }
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
@@ -131,6 +134,26 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 	x := if args.colorize { color_string('x', args.ls_color_ex) } else { 'x' }
 	e := if file_permission.execute { x } else { '-' }
 	return '${r}${w}${e}'
+}
+
+fn print_time(entry Entry, args Args) []Column {
+	mut cols := []Column{}
+
+	date := time.unix(entry.stat.ctime)
+		.local()
+		.custom_format('MMM DD YYYY ')
+
+	cols << Column{
+		content: date
+	}
+
+	cols << Column{
+		content: time.unix(entry.stat.ctime)
+			.local()
+			.custom_format('HH:MM:ss')
+	}
+
+	return cols
 }
 
 fn longest_nlink_len(entries []Entry) int {
@@ -150,9 +173,9 @@ fn longest_group_name_len(entries []Entry) int {
 
 fn longest_size_len(entries []Entry, human_readable bool) int {
 	lengths := entries.map(if human_readable {
-		it.r_size.len
+		if it.dir { 1 } else { it.r_size.len }
 	} else {
-		it.stat.size.str().len
+		if it.dir { 1 } else { it.stat.size.str().len }
 	})
 	return arrays.max(lengths) or { 0 }
 }

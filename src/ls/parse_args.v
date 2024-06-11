@@ -47,42 +47,35 @@ fn parse_args(args []string) Args {
 	fp.application(app_name)
 	fp.version(common.coreutils_version())
 	fp.skip_executable()
-	fp.description('List information about the FILEs (the current directory by default).')
+	fp.description('List information about the files. (current directory by default)')
+	fp.arguments_description('[FILES]')
 
-	eol := common.eol()
-	wrap := eol + flag.space
+	// eol := common.eol()
+	// wrap := eol + flag.space
 
-	all := fp.bool('all', `a`, false, 'do not ignore entries starting with .')
-	list_by_cols := fp.bool('', `C`, true, 'list entries by columns')
-	colorize := fp.bool('color', ` `, false, 'color the output')
-	only_dirs := fp.bool('only-dirs', `D`, false, 'list only directories')
-	dirs_first := fp.bool('group-directories-first', ` `, false,
-		'group directories before files;${wrap}' +
-		'can be augmented with a --sort option, but any${wrap}' +
-		'use of --sort=none (-U) disables grouping')
-	human_readable := fp.bool('human-readable', `h`, false, 'with -l and -s, print sizes like 1K 234M 2G etc.')
-	inode := fp.bool('inode', `i`, false, 'show inode for each file')
+	all := fp.bool('', `a`, false, 'do not ignore entries starting with .')
+	colorize := fp.bool('', `c`, false, 'color the listing')
+	only_dirs := fp.bool('', `d`, false, 'list only directories')
+	dirs_first := fp.bool('', `g`, false, 'group directories before files')
+	inode := fp.bool('', `i`, false, 'show inode of each file')
+	human_readable := fp.bool('', `k`, false, 'friendly file sizes (e.g. 1K 234M 2G)')
 	long_format := fp.bool('', `l`, false, 'use long listing format')
-	with_commas := fp.bool('', `m`, false, 'fill width with a comma separated list of entries')
-	dir_indicator := fp.bool('dir-indicator', `p`, false, 'append / indicator to directories')
-	sort_reverse := fp.bool('reverse', `r`, false, 'reverse order while sorting')
-	sort_size := fp.bool('', `S`, false, 'sort by file size, largest first')
-	sort_time := fp.bool('', `t`, false, 'sort by time, newest first; see --time')
-	sort_width := fp.bool('', `W`, false, 'sort by width, shortest first')
-	sort_ext := fp.bool('', `X`, false, 'sort by entry extension')
-	list_by_lines := fp.bool('', `x`, false, 'list entries by lines instead of by columns')
+	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
+	dir_indicator := fp.bool('', `p`, false, 'append / to directories')
+	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
+	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')
+	sort_time := fp.bool('', `t`, false, 'sort by time, newest firsts')
+	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
+	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
+	list_by_cols := fp.bool('', `C`, true, 'list entries by columns (default)')
+	list_by_lines := fp.bool('', `L`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	fp.footer('
 
-		The SIZE argument is an integer and optional unit (example: 10K is 10*1024).
-		Units are K,M,G,T,P,E,Z,Y,R,Q (powers of 1024) or KB,MB,... (powers of 1000).
-		Binary prefixes can be used, too: KiB=K, MiB=M, and so on.
-
-		Using color to distinguish file types is disabled both by default and
-		with --color=never.  With --color=auto, ls emits color codes only when
-		standard output is connected to a terminal.  The LS_COLORS environment
-		variable can change the settings.  Use the dircolors command to set it.'.trim_indent())
+		ls with the -c option emits color codes only when standard output is connected
+		to a terminal. The LS_COLORS environment variable can change the color settings.  
+		Use the dircolors command to set it.'.trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }

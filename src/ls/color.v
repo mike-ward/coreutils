@@ -103,6 +103,14 @@ fn make_term_color(ansi string) Term_Color {
 	}
 }
 
+fn dim(s string) string {
+	return if term.can_show_color_on_stdout() {
+		term.dim(s)
+	} else {
+		s
+	}
+}
+
 fn empty_color(s string) string {
 	return s
 }

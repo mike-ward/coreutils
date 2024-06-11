@@ -75,8 +75,11 @@ fn readable_size(size u64, si bool) string {
 	mut sz := f64(size)
 	for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z'] {
 		if sz < kb {
-			round_up := if unit.len > 0 { sz + .049999 } else { sz }
-			readable := math.round_sig(round_up, 1).str().trim_string_right('.0')
+			readable := if unit.len == 0 {
+				size.str()
+			} else {
+				math.round_sig(sz + .049999, 1).str()
+			}
 			bytes := if si && unit.len > 0 { 'B' } else { '' }
 			return '${readable}${unit}${bytes}'
 		}

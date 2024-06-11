@@ -134,9 +134,9 @@ fn (entries []Entry) max_name_len() int {
 
 fn get_term_color_for(entry Entry, args Args) Term_Color {
 	return match true {
+		entry.link { args.ls_color_ln }
 		entry.dir { args.ls_color_di }
 		entry.exe { args.ls_color_ex }
-		entry.link { args.ls_color_ln }
 		entry.file { args.ls_color_fi }
 		else { empty_term_color }
 	}
