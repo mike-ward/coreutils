@@ -29,6 +29,11 @@ struct Args {
 	// long view options
 	inode          bool
 	no_permissions bool
+	no_hard_links  bool
+	no_owner_name  bool
+	no_group_name  bool
+	no_size        bool
+	no_date        bool
 	human_readable bool
 	//
 	// ls colors
@@ -47,7 +52,7 @@ fn parse_args(args []string) Args {
 	fp.application(app_name)
 	fp.version(common.coreutils_version())
 	fp.skip_executable()
-	fp.description('List information about the files. (current directory by default)')
+	fp.description('List information about the files (current directory by default)')
 	fp.arguments_description('[FILES]')
 
 	// eol := common.eol()
@@ -70,12 +75,18 @@ fn parse_args(args []string) Args {
 	list_by_cols := fp.bool('', `C`, true, 'list entries by columns (default)')
 	list_by_lines := fp.bool('', `L`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
+	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
+	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
+	no_owner_name := fp.bool('owner', ` `, false, 'hide owner name')
+	no_group_name := fp.bool('group', ` `, false, 'hide group name')
+	no_size := fp.bool('size', ` `, false, 'hide file size')
+	no_date := fp.bool('date', ` `, false, 'hide date')
 
 	fp.footer('
 
-		ls with the -c option emits color codes only when standard output is connected
-		to a terminal. The LS_COLORS environment variable can change the color settings.  
-		Use the dircolors command to set it.'.trim_indent())
+		ls with the -c option emits color codes only when standard output is
+		connected to a terminal. The LS_COLORS environment variable controls
+		the color settings. Use the dircolors command to set colors.'.trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
@@ -98,6 +109,12 @@ fn parse_args(args []string) Args {
 		sort_ext: sort_ext
 		inode: inode
 		human_readable: human_readable
+		no_permissions: no_permissions
+		no_hard_links: no_hard_links
+		no_owner_name: no_owner_name
+		no_group_name: no_group_name
+		no_size: no_size
+		no_date: no_date
 		files: files
 		ls_color_di: ls_colors['di']
 		ls_color_fi: ls_colors['fi']

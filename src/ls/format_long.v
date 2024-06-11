@@ -21,55 +21,62 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_inode
 				right_align: true
 			}
-
 			cols << spacer()
 		}
 
-		// permissinos
-		cols << Column{
-			content: permissions(entry, args)
+		// permissions
+		if !args.no_permissions {
+			cols << Column{
+				content: permissions(entry, args)
+			}
 		}
 
 		// hard links
-		cols << Column{
-			content: '${entry.stat.nlink}'
-			width: longest_nlink
-			right_align: true
+		if !args.no_hard_links {
+			cols << Column{
+				content: '${entry.stat.nlink}'
+				width: longest_nlink
+				right_align: true
+			}
+			cols << spacer()
 		}
-
-		cols << spacer()
 
 		// owner name
-		cols << Column{
-			content: get_owner_name(entry.stat.uid)
-			width: longest_owner_name
+		if !args.no_owner_name {
+			cols << Column{
+				content: get_owner_name(entry.stat.uid)
+				width: longest_owner_name
+			}
+			cols << spacer()
 		}
-
-		cols << spacer()
 
 		// group name
-		cols << Column{
-			content: get_group_name(entry.stat.gid)
-			width: longest_group_name
+		if !args.no_group_name {
+			cols << Column{
+				content: get_group_name(entry.stat.gid)
+				width: longest_group_name
+			}
+			cols << spacer()
 		}
-
-		cols << spacer()
 
 		// size
-		cols << Column{
-			content: match true {
-				entry.dir { '-' }
-				args.human_readable { entry.r_size }
-				else { entry.stat.size.str() }
+		if !args.no_size {
+			cols << Column{
+				content: match true {
+					entry.dir { '-' }
+					args.human_readable { entry.r_size }
+					else { entry.stat.size.str() }
+				}
+				width: longest_size
+				right_align: true
 			}
-			width: longest_size
-			right_align: true
+			cols << spacer()
 		}
 
-		cols << spacer()
-
-		// time
-		cols << print_time(entry, args)
+		// date/time
+		if !args.no_date {
+			cols << print_time(entry, args)
+		}
 
 		cols << spacer()
 		cols << spacer()
