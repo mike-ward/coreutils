@@ -26,7 +26,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		mut cols := []Column{}
 
 		// inode
-		if !args.no_inode {
+		if args.inode {
 			cols << Column{
 				content: entry.stat.inode.str()
 				width: longest_inode
@@ -254,7 +254,7 @@ fn longest_size_len(entries []Entry, title string, args Args) int {
 fn longest_inode_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.inode.str().len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_inode || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if !args.inode || args.no_header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_file_name_len(entries []Entry, title string, args Args) int {

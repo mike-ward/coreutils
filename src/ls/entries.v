@@ -14,26 +14,14 @@ struct Entry {
 	r_size_kb string
 }
 
-// Before changing this function, try some of these edge cases with GNU ls
-// 		ls ../..
-//      ls ../../*txt
-//      ls ../..*
-// the last one is particularly interesting in that it
-// walks the subdirs and prints each subdir separately.
 fn get_entries(args Args) []Entry {
-	files := if args.files.len == 0 {
-		os.ls('.') or { exit_error(err.msg()) }
-	} else {
-		args.files
-	}
-
 	mut entries := []Entry{}
 	wd := os.getwd()
 	defer { cd(wd) }
 
-	for file in files {
+	for file in args.files {
 		if os.is_dir(file) {
-			other_files := os.ls(file) or { exit_error(err.msg()) }
+			other_files := os.ls(file) or { continue }
 			cd(file)
 			entries << other_files.map(make_entry(it, file, args))
 			cd(wd)

@@ -30,7 +30,6 @@ struct Args {
 	// long view options
 	inode          bool
 	human_readable bool
-	no_inode       bool
 	no_header      bool
 	no_permissions bool
 	no_hard_links  bool
@@ -82,7 +81,7 @@ fn parse_args(args []string) Args {
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	no_header := fp.bool('header', ` `, false, 'hide header row')
-	no_inode := fp.bool('inode', ` `, true, 'hide inodes (defaults to hidden)')
+	inode := fp.bool('inode', ` `, false, 'show inodes')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
 	no_owner_name := fp.bool('owner', ` `, false, 'hide owner name')
@@ -118,14 +117,14 @@ fn parse_args(args []string) Args {
 		recursive: recursive
 		human_readable: human_readable
 		no_header: no_header
-		no_inode: no_inode
+		inode: inode
 		no_permissions: no_permissions
 		no_hard_links: no_hard_links
 		no_owner_name: no_owner_name
 		no_group_name: no_group_name
 		no_size: no_size
 		no_date: no_date
-		files: files
+		files: if files.len == 0 { ['.'] } else { files }
 		ls_color_di: ls_colors['di']
 		ls_color_fi: ls_colors['fi']
 		ls_color_ln: ls_colors['ln']
