@@ -12,9 +12,10 @@ mut:
 
 struct Column {
 	content     string
+	title       string
 	width       int
 	right_align bool
-	color       Term_Color = empty_term_color
+	style       Style = empty_style
 }
 
 fn format(entries []Entry, args Args) []Row {
@@ -44,7 +45,7 @@ fn format_by_columns(entries []Entry, width int, args Args) []Row {
 				rows[r].columns << Column{
 					content: entries[idx].name
 					width: len
-					color: get_term_color_for(entries[idx], args)
+					style: get_style_for(entries[idx], args)
 				}
 			}
 		}
@@ -64,7 +65,7 @@ fn format_by_lines(entries []Entry, width int, args Args) []Row {
 		rows[rows.len - 1].columns << Column{
 			content: entry.name
 			width: len
-			color: get_term_color_for(entry, args)
+			style: get_style_for(entry, args)
 		}
 	}
 	return rows
@@ -77,7 +78,7 @@ fn format_one_per_line(entries []Entry, args Args) []Row {
 			columns: [
 				Column{
 					content: entry.name
-					color: get_term_color_for(entry, args)
+					style: get_style_for(entry, args)
 				},
 			]
 		}
@@ -111,7 +112,7 @@ fn print_column(c Column, args Args) {
 		print(' '.repeat(pad))
 	}
 
-	content := if args.colorize { color_string(c.content, c.color) } else { c.content }
+	content := if args.colorize { colorize_string(c.content, c.style) } else { c.content }
 	print(content)
 
 	if !c.right_align && pad > 0 {
@@ -122,7 +123,7 @@ fn print_column(c Column, args Args) {
 fn print_dir_name(name string, args Args) {
 	if name.len > 0 {
 		println('')
-		nm := if args.colorize { color_string(name, args.ls_color_di) } else { name }
+		nm := if args.colorize { colorize_string(name, args.ls_color_di) } else { name }
 		println('${nm}:')
 	}
 }
@@ -132,12 +133,12 @@ fn (entries []Entry) max_name_len() int {
 	return arrays.max(lengths) or { 0 }
 }
 
-fn get_term_color_for(entry Entry, args Args) Term_Color {
+fn get_style_for(entry Entry, args Args) Style {
 	return match true {
 		entry.link { args.ls_color_ln }
 		entry.dir { args.ls_color_di }
 		entry.exe { args.ls_color_ex }
 		entry.file { args.ls_color_fi }
-		else { empty_term_color }
+		else { empty_style }
 	}
 }

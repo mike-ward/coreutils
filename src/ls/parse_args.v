@@ -25,22 +25,25 @@ struct Args {
 	sort_ext     bool
 	sort_width   bool
 	sort_reverse bool
+	recursive    bool
 	//
 	// long view options
 	inode          bool
+	human_readable bool
+	no_inode       bool
+	no_header      bool
 	no_permissions bool
 	no_hard_links  bool
 	no_owner_name  bool
 	no_group_name  bool
 	no_size        bool
 	no_date        bool
-	human_readable bool
 	//
 	// ls colors
-	ls_color_di Term_Color
-	ls_color_fi Term_Color
-	ls_color_ln Term_Color
-	ls_color_ex Term_Color
+	ls_color_di Style
+	ls_color_fi Style
+	ls_color_ln Style
+	ls_color_ex Style
 	//
 	// file arguments
 	files []string
@@ -62,19 +65,24 @@ fn parse_args(args []string) Args {
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
-	inode := fp.bool('', `i`, false, 'show inode of each file')
 	human_readable := fp.bool('', `k`, false, 'friendly file sizes (e.g. 1K 234M 2G)')
-	long_format := fp.bool('', `l`, false, 'use long listing format')
+	long_format := fp.bool('', `l`, false, 'long listing format')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
 	dir_indicator := fp.bool('', `p`, false, 'append / to directories')
+
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
 	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')
 	sort_time := fp.bool('', `t`, false, 'sort by time, newest firsts')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
+
 	list_by_cols := fp.bool('', `C`, true, 'list entries by columns (default)')
 	list_by_lines := fp.bool('', `L`, false, 'list entries by lines instead of by columns')
+	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
+
+	no_header := fp.bool('header', ` `, false, 'hide header row')
+	no_inode := fp.bool('inode', ` `, true, 'hide inodes (defaults to hidden)')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
 	no_owner_name := fp.bool('owner', ` `, false, 'hide owner name')
@@ -107,8 +115,10 @@ fn parse_args(args []string) Args {
 		sort_time: sort_time
 		sort_width: sort_width
 		sort_ext: sort_ext
-		inode: inode
+		recursive: recursive
 		human_readable: human_readable
+		no_header: no_header
+		no_inode: no_inode
 		no_permissions: no_permissions
 		no_hard_links: no_hard_links
 		no_owner_name: no_owner_name

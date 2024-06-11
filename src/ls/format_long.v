@@ -1,13 +1,24 @@
 import arrays
+import v.mathutil
 import os
+import strings
 import time
 
 fn format_long_listing(entries []Entry, args Args) []Row {
-	longest_nlink := longest_nlink_len(entries)
-	longest_owner_name := longest_owner_name_len(entries)
-	longest_group_name := longest_group_name_len(entries)
-	longest_size := longest_size_len(entries, args.human_readable)
-	longest_inode := longest_inode_len(entries)
+	inode_title := 'inode'
+	permissions_title := 'permissions'
+	links_title := 'links'
+	owner_title := 'owner'
+	group_title := 'group'
+	size_title := 'size'
+	name_title := 'name'
+
+	longest_inode := longest_inode_len(entries, inode_title, args)
+	longest_nlink := longest_nlink_len(entries, links_title, args)
+	longest_owner_name := longest_owner_name_len(entries, owner_title, args)
+	longest_group_name := longest_group_name_len(entries, group_title, args)
+	longest_size := longest_size_len(entries, size_title, args)
+	longest_file := longest_file_name_len(entries, name_title, args)
 
 	mut rows := []Row{}
 
@@ -15,11 +26,12 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		mut cols := []Column{}
 
 		// inode
-		if args.inode {
+		if !args.no_inode {
 			cols << Column{
 				content: entry.stat.inode.str()
 				width: longest_inode
 				right_align: true
+				title: inode_title
 			}
 			cols << spacer()
 		}
@@ -27,8 +39,18 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// permissions
 		if !args.no_permissions {
 			cols << Column{
-				content: permissions(entry, args)
+				content: file_flag(entry, args)
+				width: 1
 			}
+			cols << spacer()
+
+			cols << Column{
+				content: permissions(entry, args)
+				width: permissions_title.len
+				right_align: true
+				title: permissions_title
+			}
+			cols << spacer()
 		}
 
 		// hard links
@@ -37,6 +59,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				content: '${entry.stat.nlink}'
 				width: longest_nlink
 				right_align: true
+				title: links_title
 			}
 			cols << spacer()
 		}
@@ -46,6 +69,8 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			cols << Column{
 				content: get_owner_name(entry.stat.uid)
 				width: longest_owner_name
+				right_align: true
+				title: owner_title
 			}
 			cols << spacer()
 		}
@@ -55,6 +80,8 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			cols << Column{
 				content: get_group_name(entry.stat.gid)
 				width: longest_group_name
+				right_align: true
+				title: group_title
 			}
 			cols << spacer()
 		}
@@ -69,6 +96,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				}
 				width: longest_size
 				right_align: true
+				title: 'size'
 			}
 			cols << spacer()
 		}
@@ -84,7 +112,9 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// file name
 		cols << Column{
 			content: print_entry_name(entry, args)
-			color: get_term_color_for(entry, args)
+			width: longest_file
+			style: get_style_for(entry, args)
+			title: name_title
 		}
 
 		// create a row and add the columns
@@ -93,13 +123,46 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		}
 	}
 
+	if !args.no_header {
+		rows.prepend(header_rows(rows[0].columns, args))
+	}
+
 	rows << file_count(entries.len)
+	return rows
+}
+
+fn header_rows(columns []Column, args Args) []Row {
+	mut rows := []Row{}
+	mut cols := []Column{}
+
+	for col in columns {
+		cols << Column{
+			content: if col.title.len > 0 { col.title } else { ' ' }
+			width: col.width
+			right_align: col.right_align
+		}
+	}
+
+	rows << Row{
+		columns: cols
+	}
+
+	// mut uls := []Column{}
+	len := arrays.sum(columns.map(it.width)) or { 0 }
+
+	rows << Row{
+		columns: [Column{
+			content: strings.repeat_string('-', len)
+		}]
+	}
+
 	return rows
 }
 
 fn spacer() Column {
 	return Column{
 		content: ' '
+		width: 1
 	}
 }
 
@@ -118,76 +181,84 @@ fn print_entry_name(entry Entry, args Args) string {
 	}
 }
 
-fn permissions(entry Entry, args Args) string {
-	mode := entry.stat.get_mode()
-	d := if args.colorize { color_string('d', args.ls_color_di) } else { 'd' }
-	l := if args.colorize { color_string('l', args.ls_color_ln) } else { 'l' }
-	f := if args.colorize { color_string('f', args.ls_color_fi) } else { 'f' }
-	flag := match true {
+fn file_flag(entry Entry, args Args) string {
+	d := if args.colorize { colorize_string('d', args.ls_color_di) } else { 'd' }
+	l := if args.colorize { colorize_string('l', args.ls_color_ln) } else { 'l' }
+	f := if args.colorize { colorize_string('f', args.ls_color_fi) } else { 'f' }
+	return match true {
 		entry.link { l }
 		entry.dir { d }
 		entry.file { f }
 		else { ' ' }
 	}
+}
+
+fn permissions(entry Entry, args Args) string {
+	mode := entry.stat.get_mode()
 	owner := file_permission(mode.owner, args)
 	group := file_permission(mode.group, args)
 	other := file_permission(mode.others, args)
-	return '${flag} ${owner} ${group} ${other} ' // want trailing space
+	return '${owner} ${group} ${other}'
 }
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
 	r := if file_permission.read { 'r' } else { '-' }
 	w := if file_permission.write { 'w' } else { '-' }
-	x := if args.colorize { color_string('x', args.ls_color_ex) } else { 'x' }
+	x := if args.colorize { colorize_string('x', args.ls_color_ex) } else { 'x' }
 	e := if file_permission.execute { x } else { '-' }
 	return '${r}${w}${e}'
 }
 
-fn print_time(entry Entry, args Args) []Column {
-	mut cols := []Column{}
+fn print_time(entry Entry, args Args) Column {
+	date_format := 'MMM DD YYYY HH:MM:ss'
 
 	date := time.unix(entry.stat.ctime)
 		.local()
-		.custom_format('MMM DD YYYY ')
+		.custom_format(date_format)
 
-	cols << Column{
+	return Column{
 		content: date
+		width: date_format.len
+		title: 'date (modified)'
 	}
-
-	cols << Column{
-		content: time.unix(entry.stat.ctime)
-			.local()
-			.custom_format('HH:MM:ss')
-	}
-
-	return cols
 }
 
-fn longest_nlink_len(entries []Entry) int {
+fn longest_nlink_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.nlink.str().len)
-	return arrays.max(lengths) or { 0 }
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_hard_links || args.no_header { max } else { mathutil.max(max, title.len) }
 }
 
-fn longest_owner_name_len(entries []Entry) int {
+fn longest_owner_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_owner_name(it.stat.uid).len)
-	return arrays.max(lengths) or { 0 }
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_owner_name || args.no_header { max } else { mathutil.max(max, title.len) }
 }
 
-fn longest_group_name_len(entries []Entry) int {
+fn longest_group_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_group_name(it.stat.gid).len)
-	return arrays.max(lengths) or { 0 }
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_group_name || args.no_header { max } else { mathutil.max(max, title.len) }
 }
 
-fn longest_size_len(entries []Entry, human_readable bool) int {
-	lengths := entries.map(if human_readable {
+fn longest_size_len(entries []Entry, title string, args Args) int {
+	lengths := entries.map(if args.human_readable {
 		if it.dir { 1 } else { it.r_size.len }
 	} else {
 		if it.dir { 1 } else { it.stat.size.str().len }
 	})
-	return arrays.max(lengths) or { 0 }
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_size || args.no_header { max } else { mathutil.max(max, title.len) }
 }
 
-fn longest_inode_len(entries []Entry) int {
+fn longest_inode_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.inode.str().len)
-	return arrays.max(lengths) or { 0 }
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_inode || args.no_header { max } else { mathutil.max(max, title.len) }
+}
+
+fn longest_file_name_len(entries []Entry, title string, args Args) int {
+	lengths := entries.map(it.name.len + it.origin.len + 4)
+	max := arrays.max(lengths) or { 0 }
+	return if args.no_header { max } else { mathutil.max(max, title.len) }
 }

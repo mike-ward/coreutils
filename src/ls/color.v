@@ -1,37 +1,37 @@
 import term
 import os
 
-struct Term_Color {
+struct Style {
 	bold bool
 	ul   bool
-	fg   fn (string) string = empty_color
-	bg   fn (string) string = empty_color
+	fg   fn (string) string = color_none
+	bg   fn (string) string = color_none
 }
 
-const empty_term_color = Term_Color{
+const empty_style = Style{
 	bold: false
 	ul: false
-	fg: empty_color
-	bg: empty_color
+	fg: color_none
+	bg: color_none
 }
 
-fn color_string(s string, term_color Term_Color) string {
+fn colorize_string(s string, style Style) string {
 	if !term.can_show_color_on_stdout() {
 		return s
 	}
-	mut out := term_color.fg(s)
-	out = term_color.bg(out)
-	out = if term_color.bold { term.bold(out) } else { out }
-	out = if term_color.ul { term.underline(out) } else { out }
+	mut out := style.fg(s)
+	out = style.bg(out)
+	out = if style.bold { term.bold(out) } else { out }
+	out = if style.ul { term.underline(out) } else { out }
 	return out
 }
 
-fn get_ls_colors() map[string]Term_Color {
-	mut color_map := map[string]Term_Color{}
-	color_map['di'] = empty_term_color
-	color_map['fi'] = empty_term_color
-	color_map['ln'] = empty_term_color
-	color_map['ex'] = empty_term_color
+fn get_ls_colors() map[string]Style {
+	mut color_map := map[string]Style{}
+	color_map['di'] = empty_style
+	color_map['fi'] = empty_style
+	color_map['ln'] = empty_style
+	color_map['ex'] = empty_style
 
 	// example LS_COLORS
 	// di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
@@ -42,18 +42,18 @@ fn get_ls_colors() map[string]Term_Color {
 		colors := field.split('=')
 		if colors.len == 2 {
 			id := colors[0]
-			term_color := make_term_color(colors[1])
-			color_map[id] = term_color
+			style := make_style(colors[1])
+			color_map[id] = style
 		}
 	}
 	return color_map
 }
 
-fn make_term_color(ansi string) Term_Color {
+fn make_style(ansi string) Style {
 	mut bold := false
 	mut ul := false
-	mut fg := empty_color
-	mut bg := empty_color
+	mut fg := color_none
+	mut bg := color_none
 
 	codes := ansi.split(';')
 
@@ -95,7 +95,7 @@ fn make_term_color(ansi string) Term_Color {
 		}
 	}
 
-	return Term_Color{
+	return Style{
 		bold: bold
 		ul: ul
 		fg: fg
@@ -103,15 +103,7 @@ fn make_term_color(ansi string) Term_Color {
 	}
 }
 
-fn dim(s string) string {
-	return if term.can_show_color_on_stdout() {
-		term.dim(s)
-	} else {
-		s
-	}
-}
-
-fn empty_color(s string) string {
+fn color_none(s string) string {
 	return s
 }
 

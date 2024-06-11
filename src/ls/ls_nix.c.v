@@ -34,6 +34,6 @@ fn C.readlink(file &char, buf &char, buf_size usize)
 fn read_link(file string) string {
 	buf_size := 2048
 	buf := '\0'.repeat(buf_size)
-	C.readlink(file.str, buf.str, usize(buf_size))
-	return buf
+	len := C.readlink(file.str, buf.str, usize(buf_size))
+	return buf.substr(0, len)
 }
