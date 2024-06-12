@@ -65,70 +65,70 @@ const test_entries = [
 	},
 ]
 
-fn test_by_column() {
-	assert format_by_columns(test_entries, term_width, Args{}) == [
+fn test_by_cell() {
+	assert format_by_cells(test_entries, term_width, Args{}) == [
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '1.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '3.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '2.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '4.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '6.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '8.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '10.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '12.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '14.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '16.v'
 				width: 7
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '2.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '1.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '3.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '5.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '7.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '9.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '11.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '13.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '15.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '17.v'
 				width: 7
 			}]
@@ -139,67 +139,67 @@ fn test_by_column() {
 fn test_format_by_lines() {
 	assert format_by_lines(test_entries, term_width, Args{}) == [
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '1.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '2.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '3.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '1.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '2.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '3.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '4.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '5.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '6.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '7.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '8.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '9.v'
 				width: 7
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '10.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '11.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '12.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '13.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '14.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '15.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '16.v'
 				width: 7
-			}, Column{
+			}, Cell{
 				content: '17.v'
 				width: 7
 			}]
@@ -210,64 +210,64 @@ fn test_format_by_lines() {
 fn test_with_commas() {
 	assert format_with_commas(test_entries, Args{}) == [
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '1.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '2.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '3.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '1.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '2.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '3.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '4.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '5.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '6.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '7.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '8.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '9.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '10.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '11.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '12.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '13.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '14.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '15.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '16.v, '
 				width: 0
-			}, Column{
+			}, Cell{
 				content: '17.v'
 				width: 0
 			}]
@@ -278,121 +278,121 @@ fn test_with_commas() {
 fn test_format_one_per_line() {
 	assert format_one_per_line(test_entries, Args{}) == [
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '1.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '2.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '3.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '1.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '2.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '3.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '4.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '5.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '6.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '7.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '8.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '9.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '10.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '11.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '12.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '13.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '14.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '15.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '16.v'
 				width: 0
 			}]
 		},
 		Row{
-			columns: [Column{
+			cells: [Cell{
 				content: '17.v'
 				width: 0
 			}]

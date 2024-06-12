@@ -28,11 +28,11 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	mut rows := []Row{}
 
 	for entry in entries {
-		mut cols := []Column{}
+		mut cols := []Cell{}
 
 		// inode
 		if args.inode {
-			cols << Column{
+			cols << Cell{
 				content: entry.stat.inode.str()
 				width: longest_inode
 				right_align: true
@@ -43,13 +43,13 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// permissions
 		if !args.no_permissions {
-			cols << Column{
+			cols << Cell{
 				content: file_flag(entry, args)
 				width: 1
 			}
 			cols << spacer()
 
-			cols << Column{
+			cols << Cell{
 				content: permissions(entry, args)
 				width: permissions_title.len
 				right_align: true
@@ -60,7 +60,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// hard links
 		if !args.no_hard_links {
-			cols << Column{
+			cols << Cell{
 				content: '${entry.stat.nlink}'
 				width: longest_nlink
 				right_align: true
@@ -72,7 +72,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// owner name
 		if !args.no_owner_name {
-			cols << Column{
+			cols << Cell{
 				content: get_owner_name(entry.stat.uid)
 				width: longest_owner_name
 				right_align: true
@@ -84,7 +84,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// group name
 		if !args.no_group_name {
-			cols << Column{
+			cols << Cell{
 				content: get_group_name(entry.stat.gid)
 				width: longest_group_name
 				right_align: true
@@ -96,7 +96,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// size
 		if !args.no_size {
-			cols << Column{
+			cols << Cell{
 				content: match true {
 					entry.dir { '-' }
 					args.size_ki { entry.size_ki }
@@ -120,33 +120,33 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		cols << spacer()
 
 		// file name
-		cols << Column{
+		cols << Cell{
 			content: print_entry_name(entry, args)
 			width: longest_file
 			style: get_style_for(entry, args)
 			title: name_title
 		}
 
-		// create a row and add the columns
+		// create a row and add the cells
 		rows << Row{
-			columns: cols
+			cells: cols
 		}
 	}
 
 	if !args.no_header && rows.len > 0 {
-		rows.prepend(header_rows(rows[0].columns, args))
+		rows.prepend(header_rows(rows[0].cells, args))
 	}
 
 	rows << file_count(entries.len)
 	return rows
 }
 
-fn header_rows(columns []Column, args Args) []Row {
+fn header_rows(cells []Cell, args Args) []Row {
 	mut rows := []Row{}
-	mut cols := []Column{}
+	mut cols := []Cell{}
 
-	for col in columns {
-		cols << Column{
+	for col in cells {
+		cols << Cell{
 			content: if col.title.len > 0 { col.title } else { ' ' }
 			width: col.width
 			right_align: col.right_align
@@ -155,14 +155,14 @@ fn header_rows(columns []Column, args Args) []Row {
 	}
 
 	rows << Row{
-		columns: cols
+		cells: cols
 	}
 
-	len := arrays.sum(columns.map(it.width)) or { 0 }
+	len := arrays.sum(cells.map(it.width)) or { 0 }
 
 	rows << Row{
-		columns: [
-			Column{
+		cells: [
+			Cell{
 				content: strings.repeat_string('┈', len)
 				style: dim_style
 			},
@@ -172,8 +172,8 @@ fn header_rows(columns []Column, args Args) []Row {
 	return rows
 }
 
-fn spacer() Column {
-	return Column{
+fn spacer() Cell {
+	return Cell{
 		content: ' '
 		width: 1
 	}
@@ -181,7 +181,7 @@ fn spacer() Column {
 
 fn file_count(count int) Row {
 	return Row{
-		columns: [Column{
+		cells: [Cell{
 			content: 'count: ${count}'
 		}]
 	}
@@ -229,14 +229,14 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 	return '${rr}${ww}${xx}'
 }
 
-fn print_time(entry Entry, args Args) Column {
+fn print_time(entry Entry, args Args) Cell {
 	date_format := 'MMM DD YYYY HH:MM:ss'
 
 	date := time.unix(entry.stat.ctime)
 		.local()
 		.custom_format(date_format)
 
-	return Column{
+	return Cell{
 		content: date
 		width: date_format.len
 		title: date_title

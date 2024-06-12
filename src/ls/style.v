@@ -2,12 +2,12 @@ import term
 import os
 
 struct Style {
+	always bool // Always use this style. Ignore args.color option
 	bold   bool
 	dim    bool
 	ul     bool
 	fg     fn (string) string = color_none
 	bg     fn (string) string = color_none
-	always bool // Always use this style. Ignore args.color option
 }
 
 const empty_style = Style{

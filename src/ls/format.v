@@ -2,15 +2,15 @@ import arrays
 import term
 import v.mathutil
 
-const column_max = 12 // limit on wide displays
-const column_spacing = 3 // space between columns
+const cell_max = 12 // limit on wide displays
+const cell_spacing = 3 // space between cells
 
 struct Row {
 mut:
-	columns []Column
+	cells []Cell
 }
 
-struct Column {
+struct Cell {
 	content     string
 	title       string
 	width       int
@@ -26,13 +26,13 @@ fn format(entries []Entry, args Args) []Row {
 		args.list_by_lines { format_by_lines(entries, width, args) }
 		args.with_commas { format_with_commas(entries, args) }
 		args.one_per_line { format_one_per_line(entries, args) }
-		else { format_by_columns(entries, width, args) }
+		else { format_by_cells(entries, width, args) }
 	}
 }
 
-fn format_by_columns(entries []Entry, width int, args Args) []Row {
-	len := entries.max_name_len() + column_spacing
-	max_cols := mathutil.min(width / len, column_max)
+fn format_by_cells(entries []Entry, width int, args Args) []Row {
+	len := entries.max_name_len() + cell_spacing
+	max_cols := mathutil.min(width / len, cell_max)
 	partial_row := entries.len % max_cols != 0
 	max_rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
 	mut rows := []Row{}
@@ -42,7 +42,7 @@ fn format_by_columns(entries []Entry, width int, args Args) []Row {
 		for c := 0; c < max_cols; c += 1 {
 			idx := r + c * max_rows
 			if idx < entries.len {
-				rows[r].columns << Column{
+				rows[r].cells << Cell{
 					content: entries[idx].name
 					width: len
 					style: get_style_for(entries[idx], args)
@@ -54,15 +54,15 @@ fn format_by_columns(entries []Entry, width int, args Args) []Row {
 }
 
 fn format_by_lines(entries []Entry, width int, args Args) []Row {
-	len := entries.max_name_len() + column_spacing
-	max_cols := mathutil.min(width / len, column_max)
+	len := entries.max_name_len() + cell_spacing
+	max_cols := mathutil.min(width / len, cell_max)
 	mut rows := []Row{}
 
 	for i, entry in entries {
 		if i % max_cols == 0 {
 			rows << Row{}
 		}
-		rows[rows.len - 1].columns << Column{
+		rows[rows.len - 1].cells << Cell{
 			content: entry.name
 			width: len
 			style: get_style_for(entry, args)
@@ -75,8 +75,8 @@ fn format_one_per_line(entries []Entry, args Args) []Row {
 	mut rows := []Row{}
 	for entry in entries {
 		rows << Row{
-			columns: [
-				Column{
+			cells: [
+				Cell{
 					content: entry.name
 					style: get_style_for(entry, args)
 				},
@@ -90,7 +90,7 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 	mut row := []Row{len: 1}
 	last := entries.len - 1
 	for i, entry in entries {
-		row[0].columns << Column{
+		row[0].cells << Cell{
 			content: if i < last { '${entry.name}, ' } else { entry.name }
 		}
 	}
@@ -99,14 +99,14 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 
 fn print_rows(rows []Row, args Args) {
 	for row in rows {
-		for col in row.columns {
-			print_column(col, args)
+		for col in row.cells {
+			print_cell(col, args)
 		}
 		println('')
 	}
 }
 
-fn print_column(c Column, args Args) {
+fn print_cell(c Cell, args Args) {
 	pad := c.width - term.strip_ansi(c.content).runes().len
 	if c.right_align && pad > 0 {
 		print(' '.repeat(pad))
