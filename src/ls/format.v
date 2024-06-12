@@ -112,7 +112,11 @@ fn print_column(c Column, args Args) {
 		print(' '.repeat(pad))
 	}
 
-	content := if args.colorize { colorize_string(c.content, c.style) } else { c.content }
+	content := if args.colorize || c.style.always {
+		colorize_string(c.content, c.style)
+	} else {
+		c.content
+	}
 	print(content)
 
 	if !c.right_align && pad > 0 {

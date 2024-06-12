@@ -4,15 +4,16 @@ import os
 import strings
 import time
 
-fn format_long_listing(entries []Entry, args Args) []Row {
-	inode_title := 'inode'
-	permissions_title := 'permissions'
-	links_title := 'links'
-	owner_title := 'owner'
-	group_title := 'group'
-	size_title := 'size'
-	name_title := 'name'
+const inode_title = 'inode'
+const permissions_title = 'Permissions'
+const links_title = 'Links'
+const owner_title = 'Owner'
+const group_title = 'Group'
+const size_title = 'Size'
+const date_title = 'Date (modified)'
+const name_title = 'Name'
 
+fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_inode := longest_inode_len(entries, inode_title, args)
 	longest_nlink := longest_nlink_len(entries, links_title, args)
 	longest_owner_name := longest_owner_name_len(entries, owner_title, args)
@@ -96,7 +97,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				}
 				width: longest_size
 				right_align: true
-				title: 'size'
+				title: size_title
 			}
 			cols << spacer()
 		}
@@ -123,7 +124,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		}
 	}
 
-	if !args.no_header {
+	if !args.no_header && rows.len > 0 {
 		rows.prepend(header_rows(rows[0].columns, args))
 	}
 
@@ -135,11 +136,17 @@ fn header_rows(columns []Column, args Args) []Row {
 	mut rows := []Row{}
 	mut cols := []Column{}
 
+	dim_style := Style{
+		dim: true
+		always: true
+	}
+
 	for col in columns {
 		cols << Column{
 			content: if col.title.len > 0 { col.title } else { ' ' }
 			width: col.width
 			right_align: col.right_align
+			style: dim_style
 		}
 	}
 
@@ -151,9 +158,12 @@ fn header_rows(columns []Column, args Args) []Row {
 	len := arrays.sum(columns.map(it.width)) or { 0 }
 
 	rows << Row{
-		columns: [Column{
-			content: strings.repeat_string('-', len)
-		}]
+		columns: [
+			Column{
+				content: strings.repeat_string('┈', len)
+				style: dim_style
+			},
+		]
 	}
 
 	return rows
@@ -219,7 +229,7 @@ fn print_time(entry Entry, args Args) Column {
 	return Column{
 		content: date
 		width: date_format.len
-		title: 'date (modified)'
+		title: date_title
 	}
 }
 

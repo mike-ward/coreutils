@@ -2,15 +2,15 @@ import term
 import os
 
 struct Style {
-	bold bool
-	ul   bool
-	fg   fn (string) string = color_none
-	bg   fn (string) string = color_none
+	bold   bool
+	dim    bool
+	ul     bool
+	fg     fn (string) string = color_none
+	bg     fn (string) string = color_none
+	always bool // Always use this style. Ingore args.color option
 }
 
 const empty_style = Style{
-	bold: false
-	ul: false
 	fg: color_none
 	bg: color_none
 }
@@ -23,6 +23,7 @@ fn colorize_string(s string, style Style) string {
 	out = style.bg(out)
 	out = if style.bold { term.bold(out) } else { out }
 	out = if style.ul { term.underline(out) } else { out }
+	out = if style.dim { term.dim(out) } else { out }
 	return out
 }
 

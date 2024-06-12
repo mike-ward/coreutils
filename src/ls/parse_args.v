@@ -13,6 +13,7 @@ struct Args {
 	dir_indicator bool
 	with_commas   bool
 	colorize      bool
+	width_in_cols int
 	//
 	// filter, group and sorting options
 	all          bool
@@ -54,7 +55,7 @@ fn parse_args(args []string) Args {
 	fp.application(app_name)
 	fp.version(common.coreutils_version())
 	fp.skip_executable()
-	fp.description('List information about the files (current directory by default)')
+	fp.description('List information about FILES (current directory by default)')
 	fp.arguments_description('[FILES]')
 
 	// eol := common.eol()
@@ -74,26 +75,28 @@ fn parse_args(args []string) Args {
 	sort_time := fp.bool('', `t`, false, 'sort by time, newest firsts')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
+	sort_none := fp.bool('', `y`, false, 'do not sort')
 
 	list_by_cols := fp.bool('', `C`, true, 'list entries by columns (default)')
 	list_by_lines := fp.bool('', `L`, false, 'list entries by lines instead of by columns')
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
+	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
 	no_header := fp.bool('header', ` `, false, 'hide header row')
-	inode := fp.bool('inode', ` `, false, 'show inodes')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
 	no_owner_name := fp.bool('owner', ` `, false, 'hide owner name')
 	no_group_name := fp.bool('group', ` `, false, 'hide group name')
 	no_size := fp.bool('size', ` `, false, 'hide file size')
 	no_date := fp.bool('date', ` `, false, 'hide date')
+	inode := fp.bool('inode', ` `, false, 'show inodes')
 
 	fp.footer('
 
-		ls with the -c option emits color codes only when standard output is
-		connected to a terminal. The LS_COLORS environment variable controls
-		the color settings. Use the dircolors command to set colors.'.trim_indent())
+		The -c option emits color codes only when standard output is
+		connected to a terminal. Colors are defined by the LS_COLORS 
+		environment variable. To set colors, use the dircolors command.'.trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
@@ -108,12 +111,14 @@ fn parse_args(args []string) Args {
 		one_per_line: one_per_line
 		with_commas: with_commas
 		colorize: colorize
+		width_in_cols: width_in_cols
 		dir_indicator: dir_indicator
 		sort_reverse: sort_reverse
 		sort_size: sort_size
 		sort_time: sort_time
 		sort_width: sort_width
 		sort_ext: sort_ext
+		sort_none: sort_none
 		recursive: recursive
 		human_readable: human_readable
 		no_header: no_header
