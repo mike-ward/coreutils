@@ -19,7 +19,9 @@ struct Cell {
 }
 
 fn format(entries []Entry, args Args) []Row {
-	width, _ := term.get_terminal_size()
+	w, _ := term.get_terminal_size()
+	args_width_ok := args.width_in_cols > 0 && args.width_in_cols < 1000
+	width := if args_width_ok { args.width_in_cols } else { w }
 
 	return match true {
 		args.long_format { format_long_listing(entries, args) }
