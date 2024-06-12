@@ -28,75 +28,75 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	mut rows := []Row{}
 
 	for entry in entries {
-		mut cols := []Cell{}
+		mut cells := []Cell{}
 
 		// inode
 		if args.inode {
-			cols << Cell{
+			cells << Cell{
 				content: entry.stat.inode.str()
 				width: longest_inode
 				right_align: true
 				title: inode_title
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// permissions
 		if !args.no_permissions {
-			cols << Cell{
+			cells << Cell{
 				content: file_flag(entry, args)
 				width: 1
 			}
-			cols << spacer()
+			cells << spacer()
 
-			cols << Cell{
+			cells << Cell{
 				content: permissions(entry, args)
 				width: permissions_title.len
 				right_align: true
 				title: permissions_title
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// hard links
 		if !args.no_hard_links {
-			cols << Cell{
+			cells << Cell{
 				content: '${entry.stat.nlink}'
 				width: longest_nlink
 				right_align: true
 				title: links_title
 				style: dim_style
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// owner name
 		if !args.no_owner_name {
-			cols << Cell{
+			cells << Cell{
 				content: get_owner_name(entry.stat.uid)
 				width: longest_owner_name
 				right_align: true
 				title: owner_title
 				style: dim_style
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// group name
 		if !args.no_group_name {
-			cols << Cell{
+			cells << Cell{
 				content: get_group_name(entry.stat.gid)
 				width: longest_group_name
 				right_align: true
 				title: group_title
 				style: dim_style
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// size
 		if !args.no_size {
-			cols << Cell{
+			cells << Cell{
 				content: match true {
 					entry.dir { '-' }
 					args.size_ki { entry.size_ki }
@@ -108,19 +108,19 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				title: size_title
 				style: args.style_fi
 			}
-			cols << spacer()
+			cells << spacer()
 		}
 
 		// date/time
 		if !args.no_date {
-			cols << print_time(entry, args)
+			cells << print_time(entry, args)
 		}
 
-		cols << spacer()
-		cols << spacer()
+		cells << spacer()
+		cells << spacer()
 
 		// file name
-		cols << Cell{
+		cells << Cell{
 			content: print_entry_name(entry, args)
 			width: longest_file
 			style: get_style_for(entry, args)
@@ -129,7 +129,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 		// create a row and add the cells
 		rows << Row{
-			cells: cols
+			cells: cells
 		}
 	}
 
