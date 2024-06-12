@@ -13,6 +13,10 @@ const size_title = 'Size'
 const date_title = 'Date (modified)'
 const name_title = 'Name'
 
+const dim_style = Style{
+	dim: true
+}
+
 fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_inode := longest_inode_len(entries, inode_title, args)
 	longest_nlink := longest_nlink_len(entries, links_title, args)
@@ -61,6 +65,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_nlink
 				right_align: true
 				title: links_title
+				style: dim_style
 			}
 			cols << spacer()
 		}
@@ -72,6 +77,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_owner_name
 				right_align: true
 				title: owner_title
+				style: dim_style
 			}
 			cols << spacer()
 		}
@@ -83,6 +89,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_group_name
 				right_align: true
 				title: group_title
+				style: dim_style
 			}
 			cols << spacer()
 		}
@@ -138,11 +145,6 @@ fn header_rows(columns []Column, args Args) []Row {
 	mut rows := []Row{}
 	mut cols := []Column{}
 
-	dim_style := Style{
-		dim: true
-		always: true
-	}
-
 	for col in columns {
 		cols << Column{
 			content: if col.title.len > 0 { col.title } else { ' ' }
@@ -156,7 +158,6 @@ fn header_rows(columns []Column, args Args) []Row {
 		columns: cols
 	}
 
-	// mut uls := []Column{}
 	len := arrays.sum(columns.map(it.width)) or { 0 }
 
 	rows << Row{
@@ -214,11 +215,18 @@ fn permissions(entry Entry, args Args) string {
 }
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
-	r := if file_permission.read { 'r' } else { '-' }
-	w := if file_permission.write { 'w' } else { '-' }
-	x := if args.colorize { style_string('x', args.style_ex) } else { 'x' }
-	e := if file_permission.execute { x } else { '-' }
-	return '${r}${w}${e}'
+	dash := if args.colorize { style_string('-', dim_style) } else { '-' }
+
+	rs := if args.colorize { style_string('r', args.style_ln) } else { 'r' }
+	rr := if file_permission.read { rs } else { dash }
+
+	ws := if args.colorize { style_string('w', args.style_fi) } else { 'w' }
+	ww := if file_permission.write { ws } else { dash }
+
+	xs := if args.colorize { style_string('x', args.style_ex) } else { 'x' }
+	xx := if file_permission.execute { xs } else { dash }
+
+	return '${rr}${ww}${xx}'
 }
 
 fn print_time(entry Entry, args Args) Column {
@@ -232,6 +240,7 @@ fn print_time(entry Entry, args Args) Column {
 		content: date
 		width: date_format.len
 		title: date_title
+		style: dim_style
 	}
 }
 
