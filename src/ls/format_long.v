@@ -101,7 +101,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				content: match true {
 					entry.invalid { unknown }
 					entry.dir { '-' }
-					args.size_ki && args.size_ki { entry.size_ki }
+					args.size_ki && args.size_ki && !args.size_kb { entry.size_ki }
 					args.size_kb && args.size_kb { entry.size_kb }
 					else { entry.stat.size.str() }
 				}
@@ -268,7 +268,7 @@ fn longest_group_name_len(entries []Entry, title string, args Args) int {
 fn longest_size_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(match true {
 		it.dir { 1 }
-		args.size_ki { it.size_ki.len }
+		args.size_ki && !args.size_kb { it.size_ki.len }
 		args.size_kb { it.size_kb.len }
 		else { it.stat.size.str().len }
 	})
