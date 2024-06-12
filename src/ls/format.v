@@ -113,7 +113,7 @@ fn print_column(c Column, args Args) {
 	}
 
 	content := if args.colorize || c.style.always {
-		colorize_string(c.content, c.style)
+		style_string(c.content, c.style)
 	} else {
 		c.content
 	}
@@ -127,7 +127,7 @@ fn print_column(c Column, args Args) {
 fn print_dir_name(name string, args Args) {
 	if name.len > 0 {
 		println('')
-		nm := if args.colorize { colorize_string(name, args.ls_color_di) } else { name }
+		nm := if args.colorize { style_string(name, args.style_di) } else { name }
 		println('${nm}:')
 	}
 }
@@ -139,10 +139,10 @@ fn (entries []Entry) max_name_len() int {
 
 fn get_style_for(entry Entry, args Args) Style {
 	return match true {
-		entry.link { args.ls_color_ln }
-		entry.dir { args.ls_color_di }
-		entry.exe { args.ls_color_ex }
-		entry.file { args.ls_color_fi }
+		entry.link { args.style_ln }
+		entry.dir { args.style_di }
+		entry.exe { args.style_ex }
+		entry.file { args.style_fi }
 		else { empty_style }
 	}
 }

@@ -186,15 +186,15 @@ fn file_count(count int) Row {
 
 fn print_entry_name(entry Entry, args Args) string {
 	return match true {
-		entry.link { '${entry.name} -> ${entry.origin}' }
+		entry.link { '${entry.name} -> ${entry.link_origin}' }
 		else { entry.name }
 	}
 }
 
 fn file_flag(entry Entry, args Args) string {
-	d := if args.colorize { colorize_string('d', args.ls_color_di) } else { 'd' }
-	l := if args.colorize { colorize_string('l', args.ls_color_ln) } else { 'l' }
-	f := if args.colorize { colorize_string('f', args.ls_color_fi) } else { 'f' }
+	d := if args.colorize { style_string('d', args.style_di) } else { 'd' }
+	l := if args.colorize { style_string('l', args.style_ln) } else { 'l' }
+	f := if args.colorize { style_string('f', args.style_fi) } else { 'f' }
 	return match true {
 		entry.link { l }
 		entry.dir { d }
@@ -214,7 +214,7 @@ fn permissions(entry Entry, args Args) string {
 fn file_permission(file_permission os.FilePermission, args Args) string {
 	r := if file_permission.read { 'r' } else { '-' }
 	w := if file_permission.write { 'w' } else { '-' }
-	x := if args.colorize { colorize_string('x', args.ls_color_ex) } else { 'x' }
+	x := if args.colorize { style_string('x', args.style_ex) } else { 'x' }
 	e := if file_permission.execute { x } else { '-' }
 	return '${r}${w}${e}'
 }
@@ -268,7 +268,7 @@ fn longest_inode_len(entries []Entry, title string, args Args) int {
 }
 
 fn longest_file_name_len(entries []Entry, title string, args Args) int {
-	lengths := entries.map(it.name.len + it.origin.len + 4)
+	lengths := entries.map(it.name.len + it.link_origin.len + 4)
 	max := arrays.max(lengths) or { 0 }
 	return if args.no_header { max } else { mathutil.max(max, title.len) }
 }

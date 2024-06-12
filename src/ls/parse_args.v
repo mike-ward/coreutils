@@ -4,6 +4,7 @@ import common
 import flag
 
 const app_name = 'ls'
+const current_dir = ['.']
 
 struct Args {
 	// display options
@@ -38,12 +39,13 @@ struct Args {
 	no_group_name  bool
 	no_size        bool
 	no_date        bool
+	link_origin    bool
 	//
-	// ls colors
-	ls_color_di Style
-	ls_color_fi Style
-	ls_color_ln Style
-	ls_color_ex Style
+	// from ls colors
+	style_di Style
+	style_fi Style
+	style_ln Style
+	style_ex Style
 	//
 	// file arguments
 	files []string
@@ -77,9 +79,9 @@ fn parse_args(args []string) Args {
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
 	sort_none := fp.bool('', `y`, false, 'do not sort')
 
-	list_by_cols := fp.bool('', `C`, true, 'list entries by columns (default)')
-	list_by_lines := fp.bool('', `L`, false, 'list entries by lines instead of by columns')
+	link_origin := fp.bool('', `L`, false, "list link's origin information")
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
+	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
@@ -100,13 +102,13 @@ fn parse_args(args []string) Args {
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
-	ls_colors := get_ls_colors()
+	style_map := make_style_map()
 
 	return Args{
 		all: all
 		dirs_first: dirs_first
 		only_dirs: only_dirs
-		list_by_lines: list_by_lines || !list_by_cols
+		list_by_lines: list_by_lines
 		long_format: long_format
 		one_per_line: one_per_line
 		with_commas: with_commas
@@ -121,6 +123,7 @@ fn parse_args(args []string) Args {
 		sort_none: sort_none
 		recursive: recursive
 		human_readable: human_readable
+		link_origin: link_origin
 		no_header: no_header
 		inode: inode
 		no_permissions: no_permissions
@@ -129,11 +132,11 @@ fn parse_args(args []string) Args {
 		no_group_name: no_group_name
 		no_size: no_size
 		no_date: no_date
-		files: if files.len == 0 { ['.'] } else { files }
-		ls_color_di: ls_colors['di']
-		ls_color_fi: ls_colors['fi']
-		ls_color_ln: ls_colors['ln']
-		ls_color_ex: ls_colors['ex']
+		files: if files.len == 0 { current_dir } else { files }
+		style_di: style_map['di']
+		style_fi: style_map['fi']
+		style_ln: style_map['ln']
+		style_ex: style_map['ex']
 	}
 }
 

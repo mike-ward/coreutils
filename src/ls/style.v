@@ -7,7 +7,7 @@ struct Style {
 	ul     bool
 	fg     fn (string) string = color_none
 	bg     fn (string) string = color_none
-	always bool // Always use this style. Ingore args.color option
+	always bool // Always use this style. Ignore args.color option
 }
 
 const empty_style = Style{
@@ -15,7 +15,7 @@ const empty_style = Style{
 	bg: color_none
 }
 
-fn colorize_string(s string, style Style) string {
+fn style_string(s string, style Style) string {
 	if !term.can_show_color_on_stdout() {
 		return s
 	}
@@ -27,12 +27,12 @@ fn colorize_string(s string, style Style) string {
 	return out
 }
 
-fn get_ls_colors() map[string]Style {
-	mut color_map := map[string]Style{}
-	color_map['di'] = empty_style
-	color_map['fi'] = empty_style
-	color_map['ln'] = empty_style
-	color_map['ex'] = empty_style
+fn make_style_map() map[string]Style {
+	mut style_map := map[string]Style{}
+	style_map['di'] = empty_style
+	style_map['fi'] = empty_style
+	style_map['ln'] = empty_style
+	style_map['ex'] = empty_style
 
 	// example LS_COLORS
 	// di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
@@ -40,14 +40,14 @@ fn get_ls_colors() map[string]Style {
 	fields := ls_colors.split(':')
 
 	for field in fields {
-		colors := field.split('=')
-		if colors.len == 2 {
-			id := colors[0]
-			style := make_style(colors[1])
-			color_map[id] = style
+		id_codes := field.split('=')
+		if id_codes.len == 2 {
+			id := id_codes[0]
+			style := make_style(id_codes[1])
+			style_map[id] = style
 		}
 	}
-	return color_map
+	return style_map
 }
 
 fn make_style(ansi string) Style {

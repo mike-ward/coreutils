@@ -2,16 +2,16 @@ import os
 import math
 
 struct Entry {
-	name      string
-	dir_name  string
-	stat      os.Stat
-	dir       bool
-	file      bool
-	link      bool
-	exe       bool
-	origin    string
-	r_size    string
-	r_size_kb string
+	name        string
+	dir_name    string
+	stat        os.Stat
+	dir         bool
+	file        bool
+	link        bool
+	exe         bool
+	link_origin string
+	r_size      string
+	r_size_kb   string
 }
 
 fn get_entries(args Args) []Entry {
@@ -39,7 +39,7 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 	is_file := os.is_file(file)
 	is_exe := os.is_executable(file)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
-	origin := if is_link { read_link(os.abs_path(file)) } else { '' }
+	link_origin := if is_link { read_link(os.abs_path(file)) } else { '' }
 	return Entry{
 		name: file + indicator
 		dir_name: dir_name
@@ -48,7 +48,7 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		file: is_file
 		link: is_link
 		exe: is_exe
-		origin: origin
+		link_origin: link_origin
 		r_size: readable_size(stat.size, false)
 		r_size_kb: readable_size(stat.size, true)
 	}
