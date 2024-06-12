@@ -10,8 +10,8 @@ struct Entry {
 	link        bool
 	exe         bool
 	link_origin string
-	r_size      string
-	r_size_kb   string
+	size_ki     string
+	size_kb     string
 }
 
 fn get_entries(args Args) []Entry {
@@ -49,8 +49,8 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		link: is_link
 		exe: is_exe
 		link_origin: link_origin
-		r_size: readable_size(stat.size, false)
-		r_size_kb: readable_size(stat.size, true)
+		size_ki: readable_size(stat.size, true)
+		size_kb: readable_size(stat.size, false)
 	}
 }
 
@@ -59,16 +59,20 @@ fn cd(path string) {
 }
 
 fn readable_size(size u64, si bool) string {
-	kb := if si { f64(1000) } else { f64(1024) }
+	kb := if si { f64(1024) } else { f64(1000) }
 	mut sz := f64(size)
-	for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z'] {
+	for unit in ['', 'k', 'm', 'g', 't', 'p', 'e', 'z'] {
 		if sz < kb {
 			readable := if unit.len == 0 {
 				size.str()
 			} else {
 				math.round_sig(sz + .049999, 1).str()
 			}
-			bytes := if si && unit.len > 0 { 'B' } else { '' }
+			bytes := match true {
+				unit.len == 0 { '' }
+				si { '' }
+				else { 'b' }
+			}
 			return '${readable}${unit}${bytes}'
 		}
 		sz /= kb

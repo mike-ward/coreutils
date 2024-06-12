@@ -92,12 +92,14 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			cols << Column{
 				content: match true {
 					entry.dir { '-' }
-					args.human_readable { entry.r_size }
+					args.size_ki { entry.size_ki }
+					args.size_kb { entry.size_kb }
 					else { entry.stat.size.str() }
 				}
 				width: longest_size
 				right_align: true
 				title: size_title
+				style: args.style_fi
 			}
 			cols << spacer()
 		}
@@ -252,10 +254,11 @@ fn longest_group_name_len(entries []Entry, title string, args Args) int {
 }
 
 fn longest_size_len(entries []Entry, title string, args Args) int {
-	lengths := entries.map(if args.human_readable {
-		if it.dir { 1 } else { it.r_size.len }
-	} else {
-		if it.dir { 1 } else { it.stat.size.str().len }
+	lengths := entries.map(match true {
+		it.dir { 1 }
+		args.size_ki { it.size_ki.len }
+		args.size_kb { it.size_kb.len }
+		else { it.stat.size.str().len }
 	})
 	max := arrays.max(lengths) or { 0 }
 	return if args.no_size || args.no_header { max } else { mathutil.max(max, title.len) }

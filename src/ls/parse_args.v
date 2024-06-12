@@ -31,7 +31,8 @@ struct Args {
 	//
 	// long view options
 	inode          bool
-	human_readable bool
+	size_ki        bool
+	size_kb        bool
 	no_header      bool
 	no_permissions bool
 	no_hard_links  bool
@@ -67,7 +68,8 @@ fn parse_args(args []string) Args {
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
-	human_readable := fp.bool('', `k`, false, 'friendly file sizes (e.g. 1K 234M 2G)')
+	size_ki := fp.bool('', `k`, false, 'sizes in kibibytes (1024) (e.g. 1k 234m 2g)')
+	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')
 	long_format := fp.bool('', `l`, false, 'long listing format')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
 	dir_indicator := fp.bool('', `p`, false, 'append / to directories')
@@ -122,7 +124,8 @@ fn parse_args(args []string) Args {
 		sort_ext: sort_ext
 		sort_none: sort_none
 		recursive: recursive
-		human_readable: human_readable
+		size_ki: size_ki
+		size_kb: size_kb
 		link_origin: link_origin
 		no_header: no_header
 		inode: inode
