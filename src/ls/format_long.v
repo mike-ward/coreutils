@@ -12,6 +12,7 @@ const group_title = 'Group'
 const size_title = 'Size'
 const date_title = 'Date (modified)'
 const name_title = 'Name'
+const unknown = '?'
 
 const dim_style = Style{
 	dim: true
@@ -33,7 +34,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// inode
 		if args.inode {
 			cells << Cell{
-				content: entry.stat.inode.str()
+				content: if entry.invalid { unknown } else { entry.stat.inode.str() }
 				width: longest_inode
 				right_align: true
 				title: inode_title
@@ -61,7 +62,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// hard links
 		if !args.no_hard_links {
 			cells << Cell{
-				content: '${entry.stat.nlink}'
+				content: if entry.invalid { unknown } else { '${entry.stat.nlink}' }
 				width: longest_nlink
 				right_align: true
 				title: links_title
@@ -73,7 +74,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// owner name
 		if !args.no_owner_name {
 			cells << Cell{
-				content: get_owner_name(entry.stat.uid)
+				content: if entry.invalid { unknown } else { get_owner_name(entry.stat.uid) }
 				width: longest_owner_name
 				right_align: true
 				title: owner_title
@@ -85,7 +86,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		// group name
 		if !args.no_group_name {
 			cells << Cell{
-				content: get_group_name(entry.stat.gid)
+				content: if entry.invalid { unknown } else { get_group_name(entry.stat.gid) }
 				width: longest_group_name
 				right_align: true
 				title: group_title
@@ -98,6 +99,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		if !args.no_size {
 			cells << Cell{
 				content: match true {
+					entry.invalid { unknown }
 					entry.dir { '-' }
 					args.size_ki { entry.size_ki }
 					args.size_kb { entry.size_kb }
@@ -199,6 +201,7 @@ fn file_flag(entry Entry, args Args) string {
 	l := if args.colorize { style_string('l', args.style_ln) } else { 'l' }
 	f := if args.colorize { style_string('f', args.style_fi) } else { 'f' }
 	return match true {
+		entry.invalid { unknown }
 		entry.link { l }
 		entry.dir { d }
 		entry.file { f }
@@ -237,7 +240,7 @@ fn print_time(entry Entry, args Args) Cell {
 		.custom_format(date_format)
 
 	return Cell{
-		content: date
+		content: if entry.invalid { '????????????????????' } else { date }
 		width: date_format.len
 		title: date_title
 		style: dim_style

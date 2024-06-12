@@ -9,6 +9,7 @@ struct Entry {
 	file        bool
 	link        bool
 	exe         bool
+	invalid     bool
 	link_origin string
 	size_ki     string
 	size_kb     string
@@ -33,13 +34,22 @@ fn get_entries(args Args) []Entry {
 }
 
 fn make_entry(file string, dir_name string, args Args) Entry {
-	stat := os.lstat(file) or { exit_error(err.msg()) }
-	is_dir := os.is_dir(file)
 	is_link := os.is_link(file)
-	is_file := os.is_file(file)
-	is_exe := os.is_executable(file)
-	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
+	follow_link := is_link && args.link_origin && args.long_format
 	link_origin := if is_link { read_link(os.abs_path(file)) } else { '' }
+
+	fd := if follow_link { link_origin } else { file }
+	is_dir := os.is_dir(fd)
+	is_file := os.is_file(fd)
+	is_exe := os.is_executable(fd)
+	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
+	mut invalid := false
+
+	stat := os.lstat(fd) or {
+		invalid = true
+		os.Stat{}
+	}
+
 	return Entry{
 		name: file + indicator
 		dir_name: dir_name
@@ -51,6 +61,7 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		link_origin: link_origin
 		size_ki: readable_size(stat.size, true)
 		size_kb: readable_size(stat.size, false)
+		invalid: invalid
 	}
 }
 
