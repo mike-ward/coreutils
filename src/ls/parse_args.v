@@ -78,6 +78,7 @@ fn parse_args(args []string) Args {
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
 	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')
 	sort_time := fp.bool('', `t`, false, 'sort by time, newest firsts')
+	sort_natural := fp.bool('', `v`, false, 'sort numbers within text naturally')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
 	sort_none := fp.bool('', `y`, false, 'do not sort')
@@ -125,6 +126,7 @@ fn parse_args(args []string) Args {
 		sort_time: sort_time
 		sort_width: sort_width
 		sort_ext: sort_ext
+		sort_natural: sort_natural
 		sort_none: sort_none
 		recursive: recursive
 		size_ki: size_ki
