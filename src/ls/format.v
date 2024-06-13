@@ -15,7 +15,7 @@ struct Cell {
 	title       string
 	width       int
 	right_align bool
-	style       Style = empty_style
+	style       Style = no_style
 }
 
 fn format(entries []Entry, args Args) []Row {
@@ -157,6 +157,6 @@ fn get_style_for(entry Entry, args Args) Style {
 		entry.dir { args.style_di }
 		entry.exe { args.style_ex }
 		entry.file { args.style_fi }
-		else { empty_style }
+		else { no_style }
 	}
 }

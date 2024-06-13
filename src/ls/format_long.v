@@ -26,6 +26,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_group_name := longest_group_name_len(entries, group_title, args)
 	longest_size := longest_size_len(entries, size_title, args)
 	longest_file := longest_file_name_len(entries, name_title, args)
+	dim := if args.no_dim { no_style } else { dim_style }
 
 	mut rows := []Row{}
 
@@ -75,7 +76,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_nlink
 				right_align: true
 				title: links_title
-				style: dim_style
+				style: dim
 			}
 			cells << spacer()
 		}
@@ -87,7 +88,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_owner_name
 				right_align: true
 				title: owner_title
-				style: dim_style
+				style: dim
 			}
 			cells << spacer()
 		}
@@ -99,7 +100,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: longest_group_name
 				right_align: true
 				title: group_title
-				style: dim_style
+				style: dim
 			}
 			cells << spacer()
 		}
@@ -157,13 +158,14 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 fn header_rows(cells []Cell, args Args) []Row {
 	mut rows := []Row{}
 	mut cols := []Cell{}
+	dim := if args.no_dim { no_style } else { dim_style }
 
 	for col in cells {
 		cols << Cell{
 			content: if col.title.len > 0 { col.title } else { ' ' }
 			width: col.width
 			right_align: col.right_align
-			style: dim_style
+			style: dim
 		}
 	}
 
@@ -177,7 +179,7 @@ fn header_rows(cells []Cell, args Args) []Row {
 		cells: [
 			Cell{
 				content: strings.repeat_string('┈', len)
-				style: dim_style
+				style: dim
 			},
 		]
 	}
@@ -199,13 +201,17 @@ fn statistics(entries []Entry, args Args) Row {
 	mut stats := ''
 
 	if args.colorize {
+		dim := if args.no_dim { no_style } else { dim_style }
 		file_count_styled := style_string(file_count.str(), args.style_fi)
+		files := style_string('files', dim)
 		dir_count_styled := style_string(dir_count.str(), args.style_di)
+		dirs := style_string('dirs', dim)
 
-		stats = '${file_count_styled} files ${dir_count_styled} dirs'
+		stats = '${file_count_styled} ${files} ${dir_count_styled} ${dirs}'
 		if link_count > 0 {
 			link_count_styled := style_string(link_count.str(), args.style_ln)
-			stats += ' ${link_count_styled} links'
+			links := style_string('links', dim)
+			stats += ' ${link_count_styled} ${links}'
 		}
 	} else {
 		stats = '${file_count} files ${dir_count} dirs'
@@ -250,7 +256,8 @@ fn permissions(entry Entry, args Args) string {
 }
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
-	dash := if args.colorize { style_string('-', dim_style) } else { '-' }
+	dim := if args.no_dim { no_style } else { dim_style }
+	dash := if args.colorize { style_string('-', dim) } else { '-' }
 
 	rs := if args.colorize { style_string('r', args.style_ln) } else { 'r' }
 	rr := if file_permission.read { rs } else { dash }
@@ -271,11 +278,13 @@ fn print_time(entry Entry, args Args) Cell {
 		.local()
 		.custom_format(date_format)
 
+	dim := if args.no_dim { no_style } else { dim_style }
+
 	return Cell{
 		content: if entry.invalid { '????????????????????' } else { date }
 		width: date_format.len
 		title: date_title
-		style: dim_style
+		style: dim
 	}
 }
 

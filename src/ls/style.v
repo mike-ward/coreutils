@@ -10,7 +10,7 @@ struct Style {
 	bg     fn (string) string = color_none
 }
 
-const empty_style = Style{}
+const no_style = Style{}
 
 const di_style = Style{
 	bold: true

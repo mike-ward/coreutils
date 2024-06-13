@@ -17,6 +17,7 @@ struct Args {
 	width_in_cols  int
 	page_output    bool
 	blocked_output bool
+	no_dim         bool
 	//
 	// filter, group and sorting options
 	all          bool
@@ -96,6 +97,7 @@ fn parse_args(args []string) Args {
 
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
 	no_count := fp.bool('counts', ` `, false, 'hide file/dir counts')
+	no_dim := fp.bool('dim', ` `, false, 'no dim shading for light backgrounds')
 	no_header := fp.bool('header', ` `, false, 'hide header row')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
@@ -126,6 +128,7 @@ fn parse_args(args []string) Args {
 		page_output: page_output
 		with_commas: with_commas
 		colorize: colorize
+		no_dim: no_dim
 		width_in_cols: width_in_cols
 		dir_indicator: dir_indicator
 		blocked_output: blocked_output
