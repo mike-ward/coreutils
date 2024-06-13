@@ -15,6 +15,7 @@ struct Args {
 	with_commas   bool
 	colorize      bool
 	width_in_cols int
+	page_output   bool
 	//
 	// filter, group and sorting options
 	all          bool
@@ -72,7 +73,7 @@ fn parse_args(args []string) Args {
 	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')
 	long_format := fp.bool('', `l`, false, 'long listing format')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
-	dir_indicator := fp.bool('', `p`, false, 'append / to directories')
+	page_output := fp.bool('', `p`, false, 'page list screen at a time')
 
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
 	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')
@@ -81,6 +82,7 @@ fn parse_args(args []string) Args {
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
 	sort_none := fp.bool('', `y`, false, 'do not sort')
 
+	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
 	link_origin := fp.bool('', `L`, false, "list link's origin information")
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
@@ -113,6 +115,7 @@ fn parse_args(args []string) Args {
 		list_by_lines: list_by_lines
 		long_format: long_format
 		one_per_line: one_per_line
+		page_output: page_output
 		with_commas: with_commas
 		colorize: colorize
 		width_in_cols: width_in_cols

@@ -13,7 +13,7 @@ fn sort(entries []Entry, args Args) []Entry {
 				return match true {
 					a.stat.size < b.stat.size { 1 }
 					a.stat.size > b.stat.size { -1 }
-					else { 0 }
+					else { compare_strings(a.name, b.name) }
 				}
 			}
 		}
@@ -22,23 +22,25 @@ fn sort(entries []Entry, args Args) []Entry {
 				return match true {
 					a.stat.ctime < b.stat.ctime { 1 }
 					a.stat.ctime > b.stat.ctime { -1 }
-					else { 0 }
+					else { compare_strings(a.name, b.name) }
 				}
 			}
 		}
 		args.sort_width {
 			fn (a &Entry, b &Entry) int {
-				return a.name.len - b.name.len
+				result := a.name.len - b.name.len
+				return if result != 0 { result } else { compare_strings(a.name, b.name) }
 			}
 		}
 		args.sort_natural {
 			fn (a &Entry, b &Entry) int {
-				return 0 // this space for rent
+				return natural_compare(a.name, b.name)
 			}
 		}
 		args.sort_ext {
 			fn (a &Entry, b &Entry) int {
-				return compare_strings(os.file_ext(a.name), os.file_ext(b.name))
+				result := compare_strings(os.file_ext(a.name), os.file_ext(b.name))
+				return if result != 0 { result } else { compare_strings(a.name, b.name) }
 			}
 		}
 		else {
