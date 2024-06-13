@@ -100,10 +100,21 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 }
 
 fn print_rows(rows []Row, args Args) {
-	for row in rows {
+	_, h := term.get_terminal_size()
+	page := if args.page_output && h > 0 { h } else { max_int }
+
+	for i, row in rows {
+		if (i + 1) % page == 0 {
+			print('Press enter to continue...')
+			term.utf8_getchar() or {}
+			term.cursor_up(1)
+			term.erase_line_clear()
+		}
+
 		for col in row.cells {
 			print_cell(col, args)
 		}
+
 		println('')
 	}
 }
