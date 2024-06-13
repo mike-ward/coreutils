@@ -8,14 +8,15 @@ const current_dir = ['.']
 
 struct Args {
 	// display options
-	long_format   bool
-	list_by_lines bool
-	one_per_line  bool
-	dir_indicator bool
-	with_commas   bool
-	colorize      bool
-	width_in_cols int
-	page_output   bool
+	long_format    bool
+	list_by_lines  bool
+	one_per_line   bool
+	dir_indicator  bool
+	with_commas    bool
+	colorize       bool
+	width_in_cols  int
+	page_output    bool
+	blocked_output bool
 	//
 	// filter, group and sorting options
 	all          bool
@@ -66,6 +67,7 @@ fn parse_args(args []string) Args {
 	// wrap := eol + flag.space
 
 	all := fp.bool('', `a`, false, 'do not ignore entries starting with .')
+	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
@@ -121,6 +123,7 @@ fn parse_args(args []string) Args {
 		colorize: colorize
 		width_in_cols: width_in_cols
 		dir_indicator: dir_indicator
+		blocked_output: blocked_output
 		sort_reverse: sort_reverse
 		sort_size: sort_size
 		sort_time: sort_time

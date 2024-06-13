@@ -111,10 +111,25 @@ fn print_rows(rows []Row, args Args) {
 			term.erase_line_clear()
 		}
 
+		emit_blank_line_if_blocked_output(i, args)
+
 		for col in row.cells {
 			print_cell(col, args)
 		}
 
+		println('')
+	}
+}
+
+fn emit_blank_line_if_blocked_output(row int, args Args) {
+	if !args.long_format || !args.blocked_output {
+		return
+	}
+
+	block := 5
+	offset := if args.no_header { 0 } else { 2 }
+
+	if row != offset && (row - offset) % block == 0 {
 		println('')
 	}
 }
