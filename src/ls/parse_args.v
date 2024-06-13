@@ -22,6 +22,7 @@ struct Args {
 	all          bool
 	dirs_first   bool
 	only_dirs    bool
+	only_files   bool
 	sort_none    bool
 	sort_size    bool
 	sort_time    bool
@@ -71,6 +72,7 @@ fn parse_args(args []string) Args {
 	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
+	only_files := fp.bool('', `f`, false, 'list only files')
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
 	size_ki := fp.bool('', `k`, false, 'sizes in kibibytes (1024) (e.g. 1k 234m 2g)')
 	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')
@@ -93,7 +95,7 @@ fn parse_args(args []string) Args {
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
-	no_count := fp.bool('count', ` `, false, 'hide file count')
+	no_count := fp.bool('counts', ` `, false, 'hide file/dir counts')
 	no_header := fp.bool('header', ` `, false, 'hide header row')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
@@ -117,6 +119,7 @@ fn parse_args(args []string) Args {
 		all: all
 		dirs_first: dirs_first
 		only_dirs: only_dirs
+		only_files: only_files
 		list_by_lines: list_by_lines
 		long_format: long_format
 		one_per_line: one_per_line

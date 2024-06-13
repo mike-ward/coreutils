@@ -9,5 +9,9 @@ fn filter(entries []Entry, args Args) []Entry {
 		filtered = filtered.filter(it.dir)
 	}
 
+	if args.only_files {
+		filtered = filtered.filter(it.file)
+	}
+
 	return filtered
 }

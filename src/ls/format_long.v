@@ -149,7 +149,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	}
 
 	if !args.no_count {
-		rows << file_count(entries.len)
+		rows << statistics(entries, args)
 	}
 	return rows
 }
@@ -192,10 +192,31 @@ fn spacer() Cell {
 	}
 }
 
-fn file_count(count int) Row {
+fn statistics(entries []Entry, args Args) Row {
+	file_count := entries.filter(it.file).len
+	dir_count := entries.filter(it.dir).len
+	link_count := entries.filter(it.link).len
+	mut stats := ''
+
+	if args.colorize {
+		file_count_styled := style_string(file_count.str(), args.style_fi)
+		dir_count_styled := style_string(dir_count.str(), args.style_di)
+
+		stats = '${file_count_styled} files ${dir_count_styled} dirs'
+		if link_count > 0 {
+			link_count_styled := style_string(link_count.str(), args.style_ln)
+			stats += ' ${link_count_styled} links'
+		}
+	} else {
+		stats = '${file_count} files ${dir_count} dirs'
+		if link_count > 0 {
+			stats += ' ${link_count} links'
+		}
+	}
+
 	return Row{
 		cells: [Cell{
-			content: 'count: ${count}'
+			content: stats
 		}]
 	}
 }

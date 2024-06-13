@@ -10,9 +10,25 @@ struct Style {
 	bg     fn (string) string = color_none
 }
 
-const empty_style = Style{
-	fg: color_none
-	bg: color_none
+const empty_style = Style{}
+
+const di_style = Style{
+	bold: true
+	fg: fgg('36')
+}
+
+const fi_style = Style{
+	fg: fgg('32')
+}
+
+const ln_style = Style{
+	bold: true
+	fg: fgg('34')
+}
+
+const ex_style = Style{
+	bold: true
+	fg: fgg('31')
 }
 
 fn style_string(s string, style Style) string {
@@ -29,10 +45,12 @@ fn style_string(s string, style Style) string {
 
 fn make_style_map() map[string]Style {
 	mut style_map := map[string]Style{}
-	style_map['di'] = empty_style
-	style_map['fi'] = empty_style
-	style_map['ln'] = empty_style
-	style_map['ex'] = empty_style
+
+	// defaults are over writtne if specified in LS_COLORS
+	style_map['di'] = di_style
+	style_map['fi'] = fi_style
+	style_map['ln'] = ln_style
+	style_map['ex'] = ex_style
 
 	// example LS_COLORS
 	// di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
