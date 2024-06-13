@@ -139,7 +139,9 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		rows.prepend(header_rows(rows[0].cells, args))
 	}
 
-	rows << file_count(entries.len)
+	if !args.no_count {
+		rows << file_count(entries.len)
+	}
 	return rows
 }
 

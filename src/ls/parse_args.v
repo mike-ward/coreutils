@@ -42,6 +42,7 @@ struct Args {
 	no_group_name  bool
 	no_size        bool
 	no_date        bool
+	no_count       bool
 	link_origin    bool
 	//
 	// from ls colors
@@ -92,6 +93,7 @@ fn parse_args(args []string) Args {
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
+	no_count := fp.bool('count', ` `, false, 'hide file count')
 	no_header := fp.bool('header', ` `, false, 'hide header row')
 	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
 	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
@@ -143,6 +145,7 @@ fn parse_args(args []string) Args {
 		no_group_name: no_group_name
 		no_size: no_size
 		no_date: no_date
+		no_count: no_count
 		files: if files.len == 0 { current_dir } else { files }
 		style_di: style_map['di']
 		style_fi: style_map['fi']
