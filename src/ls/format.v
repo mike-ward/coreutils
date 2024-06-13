@@ -101,36 +101,21 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 
 fn print_rows(rows []Row, args Args) {
 	_, h := term.get_terminal_size()
-	page := if args.page_output && h > 0 { h } else { max_int }
+	page := if args.page_output && h > 2 { h } else { max_int }
 
 	for i, row in rows {
-		if (i + 1) % page == 0 {
-			print('Press enter to continue...')
-			term.utf8_getchar() or {}
-			term.cursor_up(1)
-			term.erase_line_clear()
-		}
-
-		emit_blank_line_if_blocked_output(i, args)
-
 		for col in row.cells {
 			print_cell(col, args)
 		}
 
 		println('')
-	}
-}
 
-fn emit_blank_line_if_blocked_output(row int, args Args) {
-	if !args.long_format || !args.blocked_output {
-		return
-	}
-
-	block := 5
-	offset := if args.no_header { 0 } else { 2 }
-
-	if row != offset && (row - offset) % block == 0 {
-		println('')
+		if i % (page - 2) == 0 && i != 0 {
+			print('Press enter to continue...')
+			term.utf8_getchar() or {}
+			term.cursor_up(1)
+			term.erase_line_clear()
+		}
 	}
 }
 

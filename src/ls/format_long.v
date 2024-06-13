@@ -13,6 +13,7 @@ const size_title = 'Size'
 const date_title = 'Date (modified)'
 const name_title = 'Name'
 const unknown = '?'
+const block_size = 5
 
 const dim_style = Style{
 	dim: true
@@ -28,7 +29,15 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 
 	mut rows := []Row{}
 
-	for entry in entries {
+	for idx, entry in entries {
+		if args.blocked_output {
+			if idx % block_size == 0 && idx != 0 {
+				rows << Row{
+					cells: [spacer()]
+				}
+			}
+		}
+
 		mut cells := []Cell{}
 
 		// inode
