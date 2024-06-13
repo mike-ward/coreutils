@@ -16,15 +16,26 @@ struct Entry {
 }
 
 fn get_entries(args Args) []Entry {
+	return get_files(args.files, args)
+}
+
+fn get_files(files []string, args Args) []Entry {
 	mut entries := []Entry{}
 	wd := os.getwd()
 	defer { cd(wd) }
 
-	for file in args.files {
+	for file in files {
 		if os.is_dir(file) {
 			other_files := os.ls(file) or { continue }
 			cd(file)
 			entries << other_files.map(make_entry(it, file, args))
+			if args.recursive {
+				for other_file in other_files {
+					if os.is_dir(other_file) {
+						entries << get_files([other_file], args)
+					}
+				}
+			}
 			cd(wd)
 			continue
 		}
