@@ -18,6 +18,7 @@ struct Group {
 
 fn C.getpwuid(uid usize) &Passwd
 fn C.getgrgid(uid usize) &Group
+fn C.readlink(file &char, buf &char, buf_size usize)
 
 fn get_owner_name(uid usize) string {
 	p := C.getpwuid(uid)
@@ -28,8 +29,6 @@ fn get_group_name(uid usize) string {
 	grp := C.getgrgid(uid)
 	return unsafe { cstring_to_vstring(grp.gr_name) }
 }
-
-fn C.readlink(file &char, buf &char, buf_size usize)
 
 fn read_link(file string) string {
 	buf_size := 2048

@@ -2,33 +2,36 @@ import term
 import os
 
 struct Style {
-	always bool // Always use this style. Ignore args.color option
-	bold   bool
-	dim    bool
-	ul     bool
-	fg     fn (string) string = color_none
-	bg     fn (string) string = color_none
+	fg   fn (string) string = no_color
+	bg   fn (string) string = no_color
+	bold bool
+	dim  bool
+	ul   bool
 }
 
 const no_style = Style{}
 
+const dim_style = Style{
+	dim: true
+}
+
 const di_style = Style{
 	bold: true
-	fg: fgg('36')
+	fg: fgg('36') // cyan
 }
 
 const fi_style = Style{
-	fg: fgg('32')
+	fg: fgg('32') // green
 }
 
 const ln_style = Style{
 	bold: true
-	fg: fgg('34')
+	fg: fgg('34') // magenta
 }
 
 const ex_style = Style{
 	bold: true
-	fg: fgg('31')
+	fg: fgg('31') // red
 }
 
 fn style_string(s string, style Style) string {
@@ -71,8 +74,8 @@ fn make_style_map() map[string]Style {
 fn make_style(ansi string) Style {
 	mut bold := false
 	mut ul := false
-	mut fg := color_none
-	mut bg := color_none
+	mut fg := no_color
+	mut bg := no_color
 
 	codes := ansi.split(';')
 
@@ -115,14 +118,14 @@ fn make_style(ansi string) Style {
 	}
 
 	return Style{
-		bold: bold
-		ul: ul
 		fg: fg
 		bg: bg
+		bold: bold
+		ul: ul
 	}
 }
 
-fn color_none(s string) string {
+fn no_color(s string) string {
 	return s
 }
 

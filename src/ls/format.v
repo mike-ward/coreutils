@@ -126,10 +126,10 @@ fn print_cell(c Cell, args Args) {
 		print(' '.repeat(pad))
 	}
 
-	content := if args.colorize || c.style.always {
+	content := if args.colorize {
 		style_string(c.content, c.style)
 	} else {
-		c.content
+		term.strip_ansi(c.content)
 	}
 	print(content)
 

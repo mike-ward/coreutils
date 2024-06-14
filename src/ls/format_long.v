@@ -15,10 +15,6 @@ const name_title = 'Name'
 const unknown = '?'
 const block_size = 5
 
-const dim_style = Style{
-	dim: true
-}
-
 fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_inode := longest_inode_len(entries, inode_title, args)
 	longest_nlink := longest_nlink_len(entries, links_title, args)
@@ -200,24 +196,16 @@ fn statistics(entries []Entry, args Args) Row {
 	link_count := entries.filter(it.link).len
 	mut stats := ''
 
-	if args.colorize {
-		dim := if args.no_dim { no_style } else { dim_style }
-		file_count_styled := style_string(file_count.str(), args.style_fi)
-		files := style_string('files', dim)
-		dir_count_styled := style_string(dir_count.str(), args.style_di)
-		dirs := style_string('dirs', dim)
-
-		stats = '${file_count_styled} ${files} ${dir_count_styled} ${dirs}'
-		if link_count > 0 {
-			link_count_styled := style_string(link_count.str(), args.style_ln)
-			links := style_string('links', dim)
-			stats += ' ${link_count_styled} ${links}'
-		}
-	} else {
-		stats = '${file_count} files ${dir_count} dirs'
-		if link_count > 0 {
-			stats += ' ${link_count} links'
-		}
+	dim := if args.no_dim { no_style } else { dim_style }
+	file_count_styled := style_string(file_count.str(), args.style_fi)
+	files := style_string('files', dim)
+	dir_count_styled := style_string(dir_count.str(), args.style_di)
+	dirs := style_string('dirs', dim)
+	stats = '${file_count_styled} ${files} ${dir_count_styled} ${dirs}'
+	if link_count > 0 {
+		link_count_styled := style_string(link_count.str(), args.style_ln)
+		links := style_string('links', dim)
+		stats += ' ${link_count_styled} ${links}'
 	}
 
 	return Row{
@@ -235,9 +223,9 @@ fn print_entry_name(entry Entry, args Args) string {
 }
 
 fn file_flag(entry Entry, args Args) string {
-	d := if args.colorize { style_string('d', args.style_di) } else { 'd' }
-	l := if args.colorize { style_string('l', args.style_ln) } else { 'l' }
-	f := if args.colorize { style_string('f', args.style_fi) } else { 'f' }
+	d := style_string('d', args.style_di)
+	l := style_string('l', args.style_ln)
+	f := style_string('f', args.style_fi)
 	return match true {
 		entry.invalid { unknown }
 		entry.link { l }
@@ -257,15 +245,15 @@ fn permissions(entry Entry, args Args) string {
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
 	dim := if args.no_dim { no_style } else { dim_style }
-	dash := if args.colorize { style_string('-', dim) } else { '-' }
+	dash := style_string('-', dim)
 
-	rs := if args.colorize { style_string('r', args.style_ln) } else { 'r' }
+	rs := style_string('r', args.style_ln)
 	rr := if file_permission.read { rs } else { dash }
 
-	ws := if args.colorize { style_string('w', args.style_fi) } else { 'w' }
+	ws := style_string('w', args.style_fi)
 	ww := if file_permission.write { ws } else { dash }
 
-	xs := if args.colorize { style_string('x', args.style_ex) } else { 'x' }
+	xs := style_string('x', args.style_ex)
 	xx := if file_permission.execute { xs } else { dash }
 
 	return '${rr}${ww}${xx}'
@@ -273,6 +261,7 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 
 fn print_time(entry Entry, args Args) Cell {
 	date_format := 'MMM DD YYYY HH:MM:ss'
+	invalid_fmt := '????????????????????'
 
 	date := time.unix(entry.stat.ctime)
 		.local()
@@ -281,7 +270,7 @@ fn print_time(entry Entry, args Args) Cell {
 	dim := if args.no_dim { no_style } else { dim_style }
 
 	return Cell{
-		content: if entry.invalid { '????????????????????' } else { date }
+		content: if entry.invalid { invalid_fmt } else { date }
 		width: date_format.len
 		title: date_title
 		style: dim
