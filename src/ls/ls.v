@@ -13,7 +13,7 @@ fn ls(args Args) {
 		return e.dir_name
 	})
 
-	for dir in group_by_dir.keys().sorted(a < b) {
+	for dir in group_by_dir.keys().sorted() {
 		group_entries := group_by_dir[dir]
 		if group_by_dir.keys().len > 1 {
 			print_dir_name(dir, args)

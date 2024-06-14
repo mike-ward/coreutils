@@ -50,13 +50,16 @@ fn sort(entries []Entry, args Args) []Entry {
 		}
 	}
 
-	mut sorted := []Entry{}
-	gentries := arrays.group_by[string, Entry](entries, fn [args] (e Entry) string {
+	// if directories first option, group entries into dirs and files
+	// The 'dir' and 'file' labels are discriptive. The only thing that
+	// matters is that the 'dir' key collates before the 'file' key
+	groups := arrays.group_by[string, Entry](entries, fn [args] (e Entry) string {
 		return if args.dirs_first && e.dir { 'dir' } else { 'file' }
 	})
 
-	for key in gentries.keys().sorted() {
-		sorted << gentries[key].sorted_with_compare(cmp)
+	mut sorted := []Entry{}
+	for key in groups.keys().sorted() {
+		sorted << groups[key].sorted_with_compare(cmp)
 	}
 
 	return if args.sort_reverse { sorted.reverse() } else { sorted }
