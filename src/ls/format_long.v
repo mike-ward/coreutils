@@ -47,6 +47,15 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			}
 			cells << spacer()
 		}
+		// octal permissions
+		if args.octal_permissions {
+			cells << Cell{
+				content: print_octal_permissions(entry, args)
+				width: 4
+				title: 'Mask'
+			}
+			cells << spacer()
+		}
 
 		// permissions
 		if !args.no_permissions {
@@ -245,6 +254,11 @@ fn file_flag(entry Entry, args Args) string {
 		entry.file { f }
 		else { ' ' }
 	}
+}
+
+fn print_octal_permissions(entry Entry, args Args) string {
+	mode := entry.stat.get_mode()
+	return '0${mode.owner.bitmask()}${mode.group.bitmask()}${mode.others.bitmask()}'
 }
 
 fn permissions(entry Entry, args Args) string {

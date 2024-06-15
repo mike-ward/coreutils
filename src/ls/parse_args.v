@@ -34,18 +34,19 @@ struct Args {
 	recursive    bool
 	//
 	// long view options
-	inode          bool
-	size_ki        bool
-	size_kb        bool
-	no_header      bool
-	no_permissions bool
-	no_hard_links  bool
-	no_owner_name  bool
-	no_group_name  bool
-	no_size        bool
-	no_date        bool
-	no_count       bool
-	link_origin    bool
+	inode             bool
+	size_ki           bool
+	size_kb           bool
+	no_header         bool
+	no_permissions    bool
+	no_hard_links     bool
+	no_owner_name     bool
+	no_group_name     bool
+	no_size           bool
+	no_date           bool
+	no_count          bool
+	link_origin       bool
+	octal_permissions bool
 	//
 	// from ls colors
 	style_di Style
@@ -83,6 +84,7 @@ fn parse_args(args []string) Args {
 	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')
 	long_format := fp.bool('', `l`, false, 'long listing format')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
+	octal_permissions := fp.bool('', `o`, false, 'show octal permissions')
 	page_output := fp.bool('', `p`, false, 'page list screen at a time')
 
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
@@ -102,19 +104,19 @@ fn parse_args(args []string) Args {
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
 	no_count := fp.bool('counts', ` `, false, 'hide file/dir counts')
 	no_dim := fp.bool('dim', ` `, false, 'no dim shading for light backgrounds')
-	no_header := fp.bool('header', ` `, false, 'hide header row')
-	no_permissions := fp.bool('permissions', ` `, false, 'hide permissions')
-	no_hard_links := fp.bool('hard-links', ` `, false, 'hide hard links count')
-	no_owner_name := fp.bool('owner', ` `, false, 'hide owner name')
-	no_group_name := fp.bool('group', ` `, false, 'hide group name')
-	no_size := fp.bool('size', ` `, false, 'hide file size')
-	no_date := fp.bool('date', ` `, false, 'hide date')
+	no_header := fp.bool('no-header', ` `, false, 'hide header row')
+	no_permissions := fp.bool('no-permissions', ` `, false, 'hide permissions')
+	no_hard_links := fp.bool('no-hard-links', ` `, false, 'hide hard links count')
+	no_owner_name := fp.bool('no-owner', ` `, false, 'hide owner name')
+	no_group_name := fp.bool('no-group', ` `, false, 'hide group name')
+	no_size := fp.bool('no-size', ` `, false, 'hide file size')
+	no_date := fp.bool('no-date', ` `, false, 'hide date')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
 
 	fp.footer('
 
-		The -c option emits color codes only when standard output is
-		connected to a terminal. Colors are defined by the LS_COLORS 
+		The -c option emits color codes when standard output is
+		connected to a terminal. Colors are defined in the LS_COLORS 
 		environment variable. To set colors, use the dircolors command.'.trim_indent())
 
 	fp.footer(common.coreutils_footer())
@@ -150,6 +152,7 @@ fn parse_args(args []string) Args {
 		no_header: no_header
 		inode: inode
 		no_permissions: no_permissions
+		octal_permissions: octal_permissions
 		no_hard_links: no_hard_links
 		no_owner_name: no_owner_name
 		no_group_name: no_group_name
