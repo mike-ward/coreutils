@@ -53,6 +53,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			cells << Cell{
 				content: file_flag(entry, args)
 				width: 1
+				title: 'T'
 			}
 			cells << spacer()
 
@@ -159,7 +160,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	if !args.no_count {
 		rows << statistics(entries, args)
 	}
-	
+
 	return rows
 }
 
