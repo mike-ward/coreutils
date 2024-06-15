@@ -75,7 +75,7 @@ fn parse_args(args []string) Args {
 	// eol := common.eol()
 	// wrap := eol + flag.space
 
-	all := fp.bool('', `a`, false, 'do not ignore entries starting with .')
+	all := fp.bool('', `a`, false, 'include entries starting with .')
 	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
@@ -94,7 +94,7 @@ fn parse_args(args []string) Args {
 	sort_natural := fp.bool('', `v`, false, 'sort numbers within text naturally')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
-	sort_none := fp.bool('', `y`, false, 'do not sort')
+	sort_none := fp.bool('', `y`, false, 'no sorting')
 
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
 	link_origin := fp.bool('', `L`, false, "list link's origin information")
