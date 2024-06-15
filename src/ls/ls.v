@@ -13,14 +13,18 @@ fn ls(args Args) {
 		return e.dir_name
 	})
 
+	print_dir_names := group_by_dir.len > 1
+
 	for dir in group_by_dir.keys().sorted() {
-		group_entries := group_by_dir[dir]
-		if group_by_dir.keys().len > 1 {
+		dir_entries := group_by_dir[dir]
+		filtered := filter(dir_entries, args)
+		sorted := sort(filtered, args)
+		listing := format(sorted, args)
+
+		if print_dir_names {
 			print_dir_name(dir, args)
 		}
-		filtered := filter(group_entries, args)
-		sorted := sort(filtered, args)
-		rows := format(sorted, args)
-		print_rows(rows, args)
+		
+		print_listing(listing, args)
 	}
 }

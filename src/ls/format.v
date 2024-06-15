@@ -99,7 +99,7 @@ fn format_with_commas(entries []Entry, args Args) []Row {
 	return row
 }
 
-fn print_rows(rows []Row, args Args) {
+fn print_listing(rows []Row, args Args) {
 	_, h := term.get_terminal_size()
 	page := if args.page_output && h > 2 { h } else { max_int }
 
