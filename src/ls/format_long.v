@@ -107,6 +107,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				content: match true {
 					entry.invalid { unknown }
 					entry.dir { '-' }
+					entry.link { '-' }
 					args.size_ki && args.size_ki && !args.size_kb { entry.size_ki }
 					args.size_kb && args.size_kb { entry.size_kb }
 					else { entry.stat.size.str() }

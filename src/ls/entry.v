@@ -49,23 +49,26 @@ fn get_files(files []string, args Args) []Entry {
 }
 
 fn make_entry(file string, dir_name string, args Args) Entry {
-	is_link := os.is_link(file)
-	follow_link := is_link && args.link_origin && args.long_format
-	link_origin := if is_link { read_link(os.abs_path(file)) } else { '' }
-
-	fd := if follow_link { link_origin } else { file }
-	is_dir := os.is_dir(fd)
-	is_file := os.is_file(fd)
-	is_exe := os.is_executable(fd)
-	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 	mut invalid := false
 
-	stat := os.lstat(fd) or {
+	stat := os.lstat(file) or {
 		invalid = true
 		os.Stat{}
 	}
 
-	file_type := stat.get_filetype()
+	filetype := stat.get_filetype()
+	is_link := filetype == os.FileType.symbolic_link
+	link_origin := if is_link { read_link(os.abs_path(file)) } else { '' }
+	follow_link := is_link && args.link_origin && args.long_format
+
+	if follow_link && !invalid {
+		return make_entry(link_origin, dir_name, args)
+	}
+
+	is_dir := filetype == os.FileType.directory
+	is_file := !is_dir
+	is_exe := os.is_executable(file)
+	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 
 	return Entry{
 		name: file + indicator
@@ -75,10 +78,10 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		file: is_file
 		link: is_link
 		exe: is_exe
-		fifo: file_type == .fifo
-		block: file_type == .block_device
-		socket: file_type == .socket
-		character: file_type == .character_device
+		fifo: filetype == .fifo
+		block: filetype == .block_device
+		socket: filetype == .socket
+		character: filetype == .character_device
 		link_origin: link_origin
 		size_ki: readable_size(stat.size, true)
 		size_kb: readable_size(stat.size, false)
