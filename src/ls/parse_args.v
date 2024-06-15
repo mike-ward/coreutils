@@ -34,10 +34,10 @@ struct Args {
 	recursive    bool
 	//
 	// long view options
+	header            bool
 	inode             bool
 	size_ki           bool
 	size_kb           bool
-	no_header         bool
 	no_permissions    bool
 	no_hard_links     bool
 	no_owner_name     bool
@@ -101,13 +101,13 @@ fn parse_args(args []string) Args {
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
+	header := fp.bool('header', ` `, false, 'show header rows')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
 	no_count := fp.bool('no-counts', ` `, false, 'hide file/dir counts')
 	no_date := fp.bool('no-date', ` `, false, 'hide date')
 	no_dim := fp.bool('no-dim', ` `, false, 'no dim shading for light backgrounds')
 	no_group_name := fp.bool('no-group', ` `, false, 'hide group name')
 	no_hard_links := fp.bool('no-hard-links', ` `, false, 'hide hard links count')
-	no_header := fp.bool('no-header', ` `, false, 'hide header row')
 	no_owner_name := fp.bool('no-owner', ` `, false, 'hide owner name')
 	no_permissions := fp.bool('no-permissions', ` `, false, 'hide permissions')
 	no_size := fp.bool('no-size', ` `, false, 'hide file size')
@@ -149,7 +149,7 @@ fn parse_args(args []string) Args {
 		size_ki: size_ki
 		size_kb: size_kb
 		link_origin: link_origin
-		no_header: no_header
+		header: header
 		inode: inode
 		no_permissions: no_permissions
 		octal_permissions: octal_permissions

@@ -151,7 +151,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		}
 	}
 
-	if !args.no_header && rows.len > 0 {
+	if args.header {
 		rows.prepend(header_rows(rows[0].cells, args))
 	}
 
@@ -306,19 +306,19 @@ fn print_time(entry Entry, args Args) Cell {
 fn longest_nlink_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.nlink.str().len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_hard_links || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if args.no_hard_links || !args.header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_owner_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_owner_name(it.stat.uid).len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_owner_name || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if args.no_owner_name || !args.header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_group_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_group_name(it.stat.gid).len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_group_name || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if args.no_group_name || !args.header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_size_len(entries []Entry, title string, args Args) int {
@@ -329,17 +329,17 @@ fn longest_size_len(entries []Entry, title string, args Args) int {
 		else { it.stat.size.str().len }
 	})
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_size || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if args.no_size || !args.header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_inode_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.inode.str().len)
 	max := arrays.max(lengths) or { 0 }
-	return if !args.inode || args.no_header { max } else { mathutil.max(max, title.len) }
+	return if !args.inode || !args.header { max } else { mathutil.max(max, title.len) }
 }
 
 fn longest_file_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.name.len + it.link_origin.len + 4)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_header { max } else { mathutil.max(max, title.len) }
+	return if !args.header { max } else { mathutil.max(max, title.len) }
 }
