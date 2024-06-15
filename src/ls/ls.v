@@ -24,7 +24,7 @@ fn ls(args Args) {
 		if print_dir_names {
 			print_dir_name(dir, args)
 		}
-		
+
 		print_listing(listing, args)
 	}
 }
