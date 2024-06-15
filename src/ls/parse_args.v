@@ -52,6 +52,10 @@ struct Args {
 	style_fi Style
 	style_ln Style
 	style_ex Style
+	style_pi Style
+	style_bd Style
+	style_cd Style
+	style_so Style
 	//
 	// file arguments
 	files []string
@@ -157,6 +161,10 @@ fn parse_args(args []string) Args {
 		style_fi: style_map['fi']
 		style_ln: style_map['ln']
 		style_ex: style_map['ex']
+		style_pi: style_map['pi']
+		style_bd: style_map['bd']
+		style_cd: style_map['cd']
+		style_so: style_map['so']
 	}
 }
 

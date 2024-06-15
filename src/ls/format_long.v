@@ -226,10 +226,21 @@ fn file_flag(entry Entry, args Args) string {
 	d := style_string('d', args.style_di)
 	l := style_string('l', args.style_ln)
 	f := style_string('f', args.style_fi)
+	e := style_string('e', args.style_ex)
+	p := style_string('p', args.style_pi)
+	b := style_string('b', args.style_bd)
+	c := style_string('c', args.style_cd)
+	s := style_string('s', args.style_so)
+
 	return match true {
 		entry.invalid { unknown }
 		entry.link { l }
 		entry.dir { d }
+		entry.exe { e }
+		entry.fifo { p }
+		entry.block { b }
+		entry.character { c }
+		entry.socket { s }
 		entry.file { f }
 		else { ' ' }
 	}

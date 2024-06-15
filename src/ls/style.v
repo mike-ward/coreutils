@@ -34,6 +34,24 @@ const ex_style = Style{
 	fg: fgg('31') // red
 }
 
+const so_style = Style{
+	fg: fgg('32') // green
+}
+
+const pi_style = Style{
+	fg: fgg('33') // orange
+}
+
+const bd_style = Style{
+	fg: fgg('34')
+	bg: bgg('46')
+}
+
+const cd_style = Style{
+	fg: fgg('34')
+	bg: bgg('43')
+}
+
 fn style_string(s string, style Style) string {
 	if !term.can_show_color_on_stdout() {
 		return s
@@ -49,11 +67,15 @@ fn style_string(s string, style Style) string {
 fn make_style_map() map[string]Style {
 	mut style_map := map[string]Style{}
 
-	// defaults are over writtne if specified in LS_COLORS
+	// start with some defaults
 	style_map['di'] = di_style
 	style_map['fi'] = fi_style
 	style_map['ln'] = ln_style
 	style_map['ex'] = ex_style
+	style_map['so'] = so_style
+	style_map['pi'] = pi_style
+	style_map['bd'] = bd_style
+	style_map['cd'] = cd_style
 
 	// example LS_COLORS
 	// di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43

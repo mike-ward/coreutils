@@ -156,6 +156,10 @@ fn get_style_for(entry Entry, args Args) Style {
 		entry.link { args.style_ln }
 		entry.dir { args.style_di }
 		entry.exe { args.style_ex }
+		entry.fifo { args.style_pi }
+		entry.block { args.style_bd }
+		entry.character { args.style_cd }
+		entry.socket { args.style_so }
 		entry.file { args.style_fi }
 		else { no_style }
 	}

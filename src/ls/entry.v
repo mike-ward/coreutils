@@ -9,10 +9,14 @@ struct Entry {
 	file        bool
 	link        bool
 	exe         bool
-	invalid     bool
+	fifo        bool
+	block       bool
+	socket      bool
+	character   bool
 	link_origin string
 	size_ki     string
 	size_kb     string
+	invalid     bool // lstat could not access
 }
 
 fn get_entries(args Args) []Entry {
@@ -61,6 +65,8 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		os.Stat{}
 	}
 
+	file_type := stat.get_filetype()
+
 	return Entry{
 		name: file + indicator
 		dir_name: dir_name
@@ -69,6 +75,10 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		file: is_file
 		link: is_link
 		exe: is_exe
+		fifo: file_type == .fifo
+		block: file_type == .block_device
+		socket: file_type == .socket
+		character: file_type == .character_device
 		link_origin: link_origin
 		size_ki: readable_size(stat.size, true)
 		size_kb: readable_size(stat.size, false)
