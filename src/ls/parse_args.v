@@ -101,17 +101,17 @@ fn parse_args(args []string) Args {
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
-	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
-	no_count := fp.bool('counts', ` `, false, 'hide file/dir counts')
-	no_dim := fp.bool('dim', ` `, false, 'no dim shading for light backgrounds')
-	no_header := fp.bool('no-header', ` `, false, 'hide header row')
-	no_permissions := fp.bool('no-permissions', ` `, false, 'hide permissions')
-	no_hard_links := fp.bool('no-hard-links', ` `, false, 'hide hard links count')
-	no_owner_name := fp.bool('no-owner', ` `, false, 'hide owner name')
-	no_group_name := fp.bool('no-group', ` `, false, 'hide group name')
-	no_size := fp.bool('no-size', ` `, false, 'hide file size')
-	no_date := fp.bool('no-date', ` `, false, 'hide date')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
+	no_count := fp.bool('no-counts', ` `, false, 'hide file/dir counts')
+	no_date := fp.bool('no-date', ` `, false, 'hide date')
+	no_dim := fp.bool('no-dim', ` `, false, 'no dim shading for light backgrounds')
+	no_group_name := fp.bool('no-group', ` `, false, 'hide group name')
+	no_hard_links := fp.bool('no-hard-links', ` `, false, 'hide hard links count')
+	no_header := fp.bool('no-header', ` `, false, 'hide header row')
+	no_owner_name := fp.bool('no-owner', ` `, false, 'hide owner name')
+	no_permissions := fp.bool('no-permissions', ` `, false, 'hide permissions')
+	no_size := fp.bool('no-size', ` `, false, 'hide file size')
+	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit')
 
 	fp.footer('
 
