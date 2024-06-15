@@ -152,13 +152,14 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 		}
 	}
 
-	if args.header {
+	if args.header && rows.len > 0 {
 		rows.prepend(header_rows(rows[0].cells, args))
 	}
 
 	if !args.no_count {
 		rows << statistics(entries, args)
 	}
+	
 	return rows
 }
 
@@ -232,7 +233,7 @@ fn print_entry_name(entry Entry, args Args) string {
 	} else {
 		entry.name
 	}
-	
+
 	return match true {
 		entry.link { '${name} -> ${entry.link_origin}' }
 		else { name }
