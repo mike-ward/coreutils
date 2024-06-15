@@ -47,15 +47,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			}
 			cells << spacer()
 		}
-		// octal permissions
-		if args.octal_permissions {
-			cells << Cell{
-				content: print_octal_permissions(entry, args)
-				width: 4
-				title: 'Mask'
-			}
-			cells << spacer()
-		}
 
 		// permissions
 		if !args.no_permissions {
@@ -70,6 +61,16 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				width: permissions_title.len
 				right_align: true
 				title: permissions_title
+			}
+			cells << spacer()
+		}
+
+		// octal permissions
+		if args.octal_permissions {
+			cells << Cell{
+				content: print_octal_permissions(entry, args)
+				width: 4
+				title: 'Mask'
 			}
 			cells << spacer()
 		}
@@ -226,9 +227,15 @@ fn statistics(entries []Entry, args Args) Row {
 }
 
 fn print_entry_name(entry Entry, args Args) string {
+	name := if args.full_path {
+		os.join_path(entry.dir_name, entry.name)
+	} else {
+		entry.name
+	}
+	
 	return match true {
-		entry.link { '${entry.name} -> ${entry.link_origin}' }
-		else { entry.name }
+		entry.link { '${name} -> ${entry.link_origin}' }
+		else { name }
 	}
 }
 

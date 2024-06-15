@@ -18,6 +18,7 @@ struct Args {
 	page_output    bool
 	blocked_output bool
 	no_dim         bool
+	full_path      bool
 	//
 	// filter, group and sorting options
 	all          bool
@@ -101,6 +102,7 @@ fn parse_args(args []string) Args {
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 
+	full_path := fp.bool('full-path', ` `, false, 'show full path')
 	header := fp.bool('header', ` `, false, 'show header rows')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
 	no_count := fp.bool('no-counts', ` `, false, 'hide file/dir counts')
@@ -149,6 +151,7 @@ fn parse_args(args []string) Args {
 		size_ki: size_ki
 		size_kb: size_kb
 		link_origin: link_origin
+		full_path: full_path
 		header: header
 		inode: inode
 		no_permissions: no_permissions
