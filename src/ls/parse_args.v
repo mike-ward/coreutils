@@ -21,18 +21,19 @@ struct Args {
 	full_path      bool
 	//
 	// filter, group and sorting options
-	all          bool
-	dirs_first   bool
-	only_dirs    bool
-	only_files   bool
-	sort_none    bool
-	sort_size    bool
-	sort_time    bool
-	sort_natural bool
-	sort_ext     bool
-	sort_width   bool
-	sort_reverse bool
-	recursive    bool
+	all             bool
+	dirs_first      bool
+	only_dirs       bool
+	only_files      bool
+	sort_none       bool
+	sort_size       bool
+	sort_time       bool
+	sort_natural    bool
+	sort_ext        bool
+	sort_width      bool
+	sort_reverse    bool
+	recursive       bool
+	recursion_depth int
 	//
 	// long view options
 	header            bool
@@ -97,6 +98,7 @@ fn parse_args(args []string) Args {
 	sort_none := fp.bool('', `y`, false, 'no sorting')
 
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
+	recursion_depth := fp.int('depth', ` `, max_int, 'Limit depth of recursion')
 	link_origin := fp.bool('', `L`, false, "list link's origin information")
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
@@ -148,6 +150,7 @@ fn parse_args(args []string) Args {
 		sort_natural: sort_natural
 		sort_none: sort_none
 		recursive: recursive
+		recursion_depth: recursion_depth
 		size_ki: size_ki
 		size_kb: size_kb
 		link_origin: link_origin
@@ -162,7 +165,7 @@ fn parse_args(args []string) Args {
 		no_size: no_size
 		no_date: no_date
 		no_count: no_count
-		files: if files.len == 0 { current_dir } else { files }
+		files: if files == [] { current_dir } else { files }
 		style_di: style_map['di']
 		style_fi: style_map['fi']
 		style_ln: style_map['ln']

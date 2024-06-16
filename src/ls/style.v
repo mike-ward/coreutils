@@ -151,14 +151,14 @@ fn no_color(s string) string {
 	return s
 }
 
-fn fgg(cc string) fn (string) string {
-	return fn [cc] (msg string) string {
-		return term.format(msg, cc, '39')
+fn fgg(code string) fn (string) string {
+	return fn [code] (msg string) string {
+		return term.format(msg, code, '39')
 	}
 }
 
-fn bgg(cc string) fn (string) string {
-	return fn [cc] (msg string) string {
-		return term.format(msg, cc, '49')
+fn bgg(code string) fn (string) string {
+	return fn [code] (msg string) string {
+		return term.format(msg, code, '49')
 	}
 }

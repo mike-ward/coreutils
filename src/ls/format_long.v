@@ -1,8 +1,7 @@
 import arrays
-import v.mathutil
 import os
-import strings
 import time
+import v.mathutil { max }
 
 const inode_title = 'inode'
 const permissions_title = 'Permissions'
@@ -27,6 +26,9 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	mut rows := []Row{}
 
 	for idx, entry in entries {
+		mut cells := []Cell{}
+
+		// spacer row
 		if args.blocked_output {
 			if idx % block_size == 0 && idx != 0 {
 				rows << Row{
@@ -34,8 +36,6 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 				}
 			}
 		}
-
-		mut cells := []Cell{}
 
 		// inode
 		if args.inode {
@@ -117,8 +117,7 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 			cells << Cell{
 				content: match true {
 					entry.invalid { unknown }
-					entry.dir { '-' }
-					entry.link { '-' }
+					entry.dir || entry.link || entry.socket || entry.fifo { '-' }
 					args.size_ki && args.size_ki && !args.size_kb { entry.size_ki }
 					args.size_kb && args.size_kb { entry.size_kb }
 					else { entry.stat.size.str() }
@@ -187,7 +186,7 @@ fn header_rows(cells []Cell, args Args) []Row {
 	rows << Row{
 		cells: [
 			Cell{
-				content: strings.repeat_string('┈', len)
+				content: '┈'.repeat(len)
 				style: dim
 			},
 		]
@@ -211,10 +210,13 @@ fn statistics(entries []Entry, args Args) Row {
 
 	dim := if args.no_dim { no_style } else { dim_style }
 	file_count_styled := style_string(file_count.str(), args.style_fi)
+
 	files := style_string('files', dim)
 	dir_count_styled := style_string(dir_count.str(), args.style_di)
+
 	dirs := style_string('dirs', dim)
 	stats = '${file_count_styled} ${files} ${dir_count_styled} ${dirs}'
+
 	if link_count > 0 {
 		link_count_styled := style_string(link_count.str(), args.style_ln)
 		links := style_string('links', dim)
@@ -242,25 +244,16 @@ fn print_entry_name(entry Entry, args Args) string {
 }
 
 fn file_flag(entry Entry, args Args) string {
-	d := style_string('d', args.style_di)
-	l := style_string('l', args.style_ln)
-	f := style_string('f', args.style_fi)
-	e := style_string('e', args.style_ex)
-	p := style_string('p', args.style_pi)
-	b := style_string('b', args.style_bd)
-	c := style_string('c', args.style_cd)
-	s := style_string('s', args.style_so)
-
 	return match true {
 		entry.invalid { unknown }
-		entry.link { l }
-		entry.dir { d }
-		entry.exe { e }
-		entry.fifo { p }
-		entry.block { b }
-		entry.character { c }
-		entry.socket { s }
-		entry.file { f }
+		entry.link { style_string('l', args.style_ln) }
+		entry.dir { style_string('d', args.style_di) }
+		entry.exe { style_string('e', args.style_ex) }
+		entry.fifo { style_string('p', args.style_pi) }
+		entry.block { style_string('b', args.style_bd) }
+		entry.character { style_string('c', args.style_cd) }
+		entry.socket { style_string('s', args.style_so) }
+		entry.file { style_string('f', args.style_fi) }
 		else { ' ' }
 	}
 }
@@ -281,15 +274,9 @@ fn permissions(entry Entry, args Args) string {
 fn file_permission(file_permission os.FilePermission, args Args) string {
 	dim := if args.no_dim { no_style } else { dim_style }
 	dash := style_string('-', dim)
-
-	rs := style_string('r', args.style_ln)
-	rr := if file_permission.read { rs } else { dash }
-
-	ws := style_string('w', args.style_fi)
-	ww := if file_permission.write { ws } else { dash }
-
-	xs := style_string('x', args.style_ex)
-	xx := if file_permission.execute { xs } else { dash }
+	rr := if file_permission.read { style_string('r', args.style_ln) } else { dash }
+	ww := if file_permission.write { style_string('w', args.style_fi) } else { dash }
+	xx := if file_permission.execute { style_string('x', args.style_ex) } else { dash }
 
 	return '${rr}${ww}${xx}'
 }
@@ -315,19 +302,19 @@ fn print_time(entry Entry, args Args) Cell {
 fn longest_nlink_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.nlink.str().len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_hard_links || !args.header { max } else { mathutil.max(max, title.len) }
+	return if args.no_hard_links || !args.header { max } else { max(max, title.len) }
 }
 
 fn longest_owner_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_owner_name(it.stat.uid).len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_owner_name || !args.header { max } else { mathutil.max(max, title.len) }
+	return if args.no_owner_name || !args.header { max } else { max(max, title.len) }
 }
 
 fn longest_group_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(get_group_name(it.stat.gid).len)
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_group_name || !args.header { max } else { mathutil.max(max, title.len) }
+	return if args.no_group_name || !args.header { max } else { max(max, title.len) }
 }
 
 fn longest_size_len(entries []Entry, title string, args Args) int {
@@ -338,17 +325,17 @@ fn longest_size_len(entries []Entry, title string, args Args) int {
 		else { it.stat.size.str().len }
 	})
 	max := arrays.max(lengths) or { 0 }
-	return if args.no_size || !args.header { max } else { mathutil.max(max, title.len) }
+	return if args.no_size || !args.header { max } else { max(max, title.len) }
 }
 
 fn longest_inode_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.stat.inode.str().len)
 	max := arrays.max(lengths) or { 0 }
-	return if !args.inode || !args.header { max } else { mathutil.max(max, title.len) }
+	return if !args.inode || !args.header { max } else { max(max, title.len) }
 }
 
 fn longest_file_name_len(entries []Entry, title string, args Args) int {
 	lengths := entries.map(it.name.len + it.link_origin.len + 4)
 	max := arrays.max(lengths) or { 0 }
-	return if !args.header { max } else { mathutil.max(max, title.len) }
+	return if !args.header { max } else { max(max, title.len) }
 }

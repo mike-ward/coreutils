@@ -2,8 +2,8 @@ import v.mathutil
 
 // compares strings with embedded numbers (e.g. log17.txt)
 fn natural_compare(a &string, b &string) int {
-	pa := natural_parts(a)
-	pb := natural_parts(b)
+	pa := split(a)
+	pb := split(b)
 	max := mathutil.min(pa.len, pb.len)
 
 	for i := 0; i < max; i++ {
@@ -28,7 +28,7 @@ enum State {
 	non_digit
 }
 
-fn natural_parts(a &string) []string {
+fn split(a &string) []string {
 	mut result := []string{}
 	mut start := 0
 	mut state := State.init

@@ -20,10 +20,10 @@ struct Entry {
 }
 
 fn get_entries(args Args) []Entry {
-	return get_files(args.files, args)
+	return get_files(args.files, args, 0)
 }
 
-fn get_files(files []string, args Args) []Entry {
+fn get_files(files []string, args Args, depth int) []Entry {
 	mut entries := []Entry{}
 	wd := os.getwd()
 	defer { cd(wd) }
@@ -36,7 +36,9 @@ fn get_files(files []string, args Args) []Entry {
 			if args.recursive {
 				for other_file in other_files {
 					if os.is_dir(other_file) {
-						entries << get_files([other_file], args)
+						if depth < args.recursion_depth {
+							entries << get_files([other_file], args, depth + 1)
+						}
 					}
 				}
 			}
@@ -98,13 +100,13 @@ fn readable_size(size u64, si bool) string {
 	mut sz := f64(size)
 	for unit in ['', 'k', 'm', 'g', 't', 'p', 'e', 'z'] {
 		if sz < kb {
-			readable := if unit.len == 0 {
+			readable := if unit == '' {
 				size.str()
 			} else {
 				math.round_sig(sz + .049999, 1).str()
 			}
 			bytes := match true {
-				unit.len == 0 { '' }
+				unit == '' { '' }
 				si { '' }
 				else { 'b' }
 			}
