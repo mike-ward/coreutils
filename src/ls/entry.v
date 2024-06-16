@@ -20,29 +20,16 @@ struct Entry {
 }
 
 fn get_entries(args Args) []Entry {
-	return get_files(args.files, args, 0)
+	return get_files(args.files, args)
 }
 
-fn get_files(files []string, args Args, depth int) []Entry {
+fn get_files(files []string, args Args) []Entry {
 	mut entries := []Entry{}
-	wd := os.getwd()
-	defer { cd(wd) }
 
 	for file in files {
 		if os.is_dir(file) {
 			other_files := os.ls(file) or { continue }
-			cd(file)
 			entries << other_files.map(make_entry(it, file, args))
-			if args.recursive {
-				for other_file in other_files {
-					if os.is_dir(other_file) {
-						if depth < args.recursion_depth {
-							entries << get_files([other_file], args, depth + 1)
-						}
-					}
-				}
-			}
-			cd(wd)
 			continue
 		}
 		entries << make_entry(file, '', args)
@@ -53,7 +40,7 @@ fn get_files(files []string, args Args, depth int) []Entry {
 fn make_entry(file string, dir_name string, args Args) Entry {
 	mut invalid := false
 
-	stat := os.lstat(file) or {
+	stat := os.lstat(os.join_path(dir_name, file)) or {
 		invalid = true
 		os.Stat{}
 	}
@@ -89,10 +76,6 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		size_kb: readable_size(stat.size, false)
 		invalid: invalid
 	}
-}
-
-fn cd(path string) {
-	os.chdir(path) or { exit_error(err.msg()) }
 }
 
 fn readable_size(size u64, si bool) string {
