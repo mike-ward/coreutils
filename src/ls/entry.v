@@ -19,11 +19,7 @@ struct Entry {
 	invalid     bool // lstat could not access
 }
 
-fn get_entries(args Args) []Entry {
-	return get_files(args.files, args)
-}
-
-fn get_files(files []string, args Args) []Entry {
+fn get_entries(files []string, args Args) []Entry {
 	mut entries := []Entry{}
 
 	for file in files {
