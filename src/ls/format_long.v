@@ -6,6 +6,7 @@ import v.mathutil { max }
 
 const inode_title = 'inode'
 const permissions_title = 'Permissions'
+const mask_title = 'Mask'
 const links_title = 'Links'
 const owner_title = 'Owner'
 const group_title = 'Group'
@@ -136,6 +137,9 @@ fn print_header(args Args, longest_inode int, longest_nlink int, longest_owner_n
 	}
 	if !args.no_permissions {
 		buffer += left_pad('T ${permissions_title}', 0)
+	}
+	if args.octal_permissions {
+		buffer += left_pad(mask_title, mask_title.len)
 	}
 	if !args.no_hard_links {
 		buffer += left_pad(links_title, longest_nlink)
