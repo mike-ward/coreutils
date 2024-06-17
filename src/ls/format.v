@@ -37,8 +37,8 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 			idx := r + c * max_rows
 			if idx < entries.len {
 				entry := entries[idx]
-				output.write_string(print_cell(entry.name, len, .left, get_style_for(entry, args),
-					args))
+				output.write_string(print_cell(entry.name, len, .left, get_style_for(entry,
+					args), args))
 			}
 		}
 		println(output)
@@ -54,7 +54,8 @@ fn format_by_lines(entries []Entry, width int, args Args) {
 		if i % max_cols == 0 && i != 0 {
 			println(output)
 		}
-		output.write_string(print_cell(entry.name, len, .left, get_style_for(entry, args), args))
+		output.write_string(print_cell(entry.name, len, .left, get_style_for(entry, args),
+			args))
 	}
 	if entries.len % max_cols != 0 {
 		println(output)
@@ -79,21 +80,22 @@ fn format_with_commas(entries []Entry, args Args) {
 
 fn print_cell(s string, width int, align Align, style Style, args Args) string {
 	mut output := ''
-	pad := width - term.strip_ansi(s).runes().len
+	no_ansi_s := term.strip_ansi(s)
+	pad := width - no_ansi_s.runes().len
 
 	if align == .right && pad > 0 {
-		output += ' '.repeat(pad)
+		output += space.repeat(pad)
 	}
 
 	content := if args.colorize {
 		style_string(s, style)
 	} else {
-		term.strip_ansi(s)
+		no_ansi_s
 	}
 	output += content
 
 	if align == .left && pad > 0 {
-		output += ' '.repeat(pad)
+		output += space.repeat(pad)
 	}
 
 	return output
