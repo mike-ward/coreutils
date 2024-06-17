@@ -14,7 +14,7 @@ const name_title = 'Name'
 const unknown = '?'
 const block_size = 5
 
-fn format_long_listing(entries []Entry, args Args) []Row {
+fn format_long_listing(entries []Entry, args Args) {
 	longest_inode := longest_inode_len(entries, inode_title, args)
 	longest_nlink := longest_nlink_len(entries, links_title, args)
 	longest_owner_name := longest_owner_name_len(entries, owner_title, args)
@@ -23,186 +23,134 @@ fn format_long_listing(entries []Entry, args Args) []Row {
 	longest_file := longest_file_name_len(entries, name_title, args)
 	dim := if args.no_dim { no_style } else { dim_style }
 
-	mut rows := []Row{}
-
 	for idx, entry in entries {
-		mut cells := []Cell{}
-
 		// spacer row
 		if args.blocked_output {
 			if idx % block_size == 0 && idx != 0 {
-				rows << Row{
-					cells: [spacer()]
-				}
+				println('')
 			}
 		}
 
 		// inode
 		if args.inode {
-			cells << Cell{
-				content: if entry.invalid { unknown } else { entry.stat.inode.str() }
-				width: longest_inode
-				right_align: true
-				title: inode_title
-			}
-			cells << spacer()
+			content := if entry.invalid { unknown } else { entry.stat.inode.str() }
+			print_cell(content, longest_inode, Align.right, no_style, args)
+			print_space()
 		}
 
 		// permissions
 		if !args.no_permissions {
-			cells << Cell{
-				content: file_flag(entry, args)
-				width: 1
-				title: 'T'
-			}
-			cells << spacer()
+			flag := file_flag(entry, args)
+			print_cell(flag, 1, .left, no_style, args)
+			print_space()
 
-			cells << Cell{
-				content: permissions(entry, args)
-				width: permissions_title.len
-				right_align: true
-				title: permissions_title
-			}
-			cells << spacer()
+			content := permissions(entry, args)
+			print_cell(content, permissions_title.len, .right, no_style, args)
+			print_space()
 		}
 
 		// octal permissions
 		if args.octal_permissions {
-			cells << Cell{
-				content: print_octal_permissions(entry, args)
-				width: 4
-				title: 'Mask'
-			}
-			cells << spacer()
+			content := print_octal_permissions(entry, args)
+			print_cell(content, 4, .left, no_style, args)
+			print_space()
 		}
 
 		// hard links
 		if !args.no_hard_links {
-			cells << Cell{
-				content: if entry.invalid { unknown } else { '${entry.stat.nlink}' }
-				width: longest_nlink
-				right_align: true
-				title: links_title
-				style: dim
-			}
-			cells << spacer()
+			content := if entry.invalid { unknown } else { '${entry.stat.nlink}' }
+			print_cell(content, longest_nlink, .right, dim, args)
+			print_space()
 		}
 
 		// owner name
 		if !args.no_owner_name {
-			cells << Cell{
-				content: if entry.invalid { unknown } else { get_owner_name(entry.stat.uid) }
-				width: longest_owner_name
-				right_align: true
-				title: owner_title
-				style: dim
-			}
-			cells << spacer()
+			content := if entry.invalid { unknown } else { get_owner_name(entry.stat.uid) }
+			print_cell(content, longest_owner_name, .right, dim, args)
+			print_space()
 		}
 
 		// group name
 		if !args.no_group_name {
-			cells << Cell{
-				content: if entry.invalid { unknown } else { get_group_name(entry.stat.gid) }
-				width: longest_group_name
-				right_align: true
-				title: group_title
-				style: dim
-			}
-			cells << spacer()
+			content := if entry.invalid { unknown } else { get_group_name(entry.stat.gid) }
+			print_cell(content, longest_group_name, .right, dim, args)
+			print_space()
 		}
 
 		// size
 		if !args.no_size {
-			cells << Cell{
-				content: match true {
-					entry.invalid { unknown }
-					entry.dir || entry.link || entry.socket || entry.fifo { '-' }
-					args.size_ki && args.size_ki && !args.size_kb { entry.size_ki }
-					args.size_kb && args.size_kb { entry.size_kb }
-					else { entry.stat.size.str() }
-				}
-				width: longest_size
-				right_align: true
-				title: size_title
-				style: args.style_fi
+			content := match true {
+				entry.invalid { unknown }
+				entry.dir || entry.link || entry.socket || entry.fifo { '-' }
+				args.size_ki && args.size_ki && !args.size_kb { entry.size_ki }
+				args.size_kb && args.size_kb { entry.size_kb }
+				else { entry.stat.size.str() }
 			}
-			cells << spacer()
+			print_cell(content, longest_size, .right, args.style_fi, args)
+			print_space()
 		}
 
 		// date/time
 		if !args.no_date {
-			cells << print_time(entry, args)
+			print_time(entry, args)
 		}
 
-		cells << spacer()
-		cells << spacer()
+		print_space()
+		print_space()
 
 		// file name
-		cells << Cell{
-			content: print_entry_name(entry, args)
-			width: longest_file
-			style: get_style_for(entry, args)
-			title: name_title
-		}
-
-		// create a row and add the cells
-		rows << Row{
-			cells: cells
-		}
+		print_cell(format_entry_name(entry, args), longest_file, .left, get_style_for(entry,
+			args), args)
+		println('')
 	}
 
-	if args.header && rows.len > 0 {
-		rows.prepend(header_rows(rows[0].cells, args))
-	}
+	// if args.header && rows.len > 0 {
+	// 	rows.prepend(header_rows(rows[0].cells, args))
+	// }
 
 	if !args.no_count {
-		rows << statistics(entries, args)
-	}
-
-	return rows
-}
-
-fn header_rows(cells []Cell, args Args) []Row {
-	mut rows := []Row{}
-	mut cols := []Cell{}
-	dim := if args.no_dim { no_style } else { dim_style }
-
-	for col in cells {
-		cols << Cell{
-			content: if col.title.len > 0 { col.title } else { ' ' }
-			width: col.width
-			right_align: col.right_align
-			style: dim
-		}
-	}
-
-	rows << Row{
-		cells: cols
-	}
-
-	len := arrays.sum(cells.map(it.width)) or { 0 }
-
-	rows << Row{
-		cells: [
-			Cell{
-				content: '┈'.repeat(len)
-				style: dim
-			},
-		]
-	}
-
-	return rows
-}
-
-fn spacer() Cell {
-	return Cell{
-		content: ' '
-		width: 1
+		statistics(entries, args)
+		println('')
 	}
 }
 
-fn statistics(entries []Entry, args Args) Row {
+// fn header_rows(cells []Cell, args Args) []Row {
+// 	mut rows := []Row{}
+// 	mut cols := []Cell{}
+// 	dim := if args.no_dim { no_style } else { dim_style }
+
+// 	for col in cells {
+// 		cols << Cell{
+// 			content: if col.title.len > 0 { col.title } else { ' ' }
+// 			width: col.width
+// 			right_align: col.right_align
+// 			style: dim
+// 		}
+// 	}
+
+// 	rows << Row{
+// 		cells: cols
+// 	}
+
+// 	len := arrays.sum(cells.map(it.width)) or { 0 }
+
+// 	rows << Row{
+// 		cells: [
+// 			Cell{
+// 				content: '┈'.repeat(len)
+// 				style: dim
+// 			},
+// 		]
+// 	}
+
+// 	return rows
+// }
+
+fn print_space() {
+	print(' ')
+}
+
+fn statistics(entries []Entry, args Args) {
 	file_count := entries.filter(it.file).len
 	dir_count := entries.filter(it.dir).len
 	link_count := entries.filter(it.link).len
@@ -223,14 +171,10 @@ fn statistics(entries []Entry, args Args) Row {
 		stats += ' ${link_count_styled} ${links}'
 	}
 
-	return Row{
-		cells: [Cell{
-			content: stats
-		}]
-	}
+	print_cell(stats, 0, .left, no_style, args)
 }
 
-fn print_entry_name(entry Entry, args Args) string {
+fn format_entry_name(entry Entry, args Args) string {
 	name := if args.full_path {
 		os.join_path(entry.dir_name, entry.name)
 	} else {
@@ -277,11 +221,10 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 	rr := if file_permission.read { style_string('r', args.style_ln) } else { dash }
 	ww := if file_permission.write { style_string('w', args.style_fi) } else { dash }
 	xx := if file_permission.execute { style_string('x', args.style_ex) } else { dash }
-
 	return '${rr}${ww}${xx}'
 }
 
-fn print_time(entry Entry, args Args) Cell {
+fn print_time(entry Entry, args Args) {
 	date_format := 'MMM DD YYYY HH:MM:ss'
 	invalid_fmt := '????????????????????'
 
@@ -290,13 +233,8 @@ fn print_time(entry Entry, args Args) Cell {
 		.custom_format(date_format)
 
 	dim := if args.no_dim { no_style } else { dim_style }
-
-	return Cell{
-		content: if entry.invalid { invalid_fmt } else { date }
-		width: date_format.len
-		title: date_title
-		style: dim
-	}
+	content := if entry.invalid { invalid_fmt } else { date }
+	print_cell(content, date_format.len, .left, dim, args)
 }
 
 fn longest_nlink_len(entries []Entry, title string, args Args) int {

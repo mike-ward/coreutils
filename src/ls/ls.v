@@ -17,11 +17,10 @@ fn ls(entries []Entry, args Args) {
 		dirs := group_by_dirs[dir]
 		filtered := filter(dirs, args)
 		sorted := sort(filtered, args)
-		listing := format(sorted, args)
 		if group_by_dirs.len > 1 || args.recursive {
 			print_dir_name(dir, args)
 		}
-		print_listing(listing, args)
+		format(sorted, args)
 
 		if args.recursive {
 			for entry in sorted {
