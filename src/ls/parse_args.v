@@ -88,7 +88,7 @@ fn parse_args(args []string) Args {
 	recursion_depth := fp.int('depth', ` `, max_int, 'Limit depth of recursion')
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
-	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit\n\nFiltering and Sorting Options')
+	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit\n\nFiltering and Sorting Options:')
 
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
@@ -97,7 +97,7 @@ fn parse_args(args []string) Args {
 	sort_natural := fp.bool('', `v`, false, 'sort numbers within text naturally')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
-	sort_none := fp.bool('', `u`, false, 'no sorting\n\nLong Listing Options')
+	sort_none := fp.bool('', `u`, false, 'no sorting\n\nLong Listing Options:')
 
 	size_ki := fp.bool('', `k`, false, 'sizes in kibibytes (1024) (e.g. 1k 234m 2g)')
 	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')

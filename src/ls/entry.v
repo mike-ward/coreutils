@@ -68,8 +68,8 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 		socket: filetype == .socket
 		character: filetype == .character_device
 		link_origin: link_origin
-		size_ki: readable_size(stat.size, true)
-		size_kb: readable_size(stat.size, false)
+		size_ki: if args.size_ki { readable_size(stat.size, true) } else { '' }
+		size_kb: if args.size_kb { readable_size(stat.size, false) } else { '' }
 		invalid: invalid
 	}
 }
