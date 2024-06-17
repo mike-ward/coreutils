@@ -17,39 +17,39 @@ const dim_style = Style{
 
 const di_style = Style{
 	bold: true
-	fg: fgg('36') // cyan
+	fg: fgf('36') // cyan
 }
 
 const fi_style = Style{
-	fg: fgg('32') // green
+	fg: fgf('32') // green
 }
 
 const ln_style = Style{
 	bold: true
-	fg: fgg('34') // magenta
+	fg: fgf('34') // magenta
 }
 
 const ex_style = Style{
 	bold: true
-	fg: fgg('31') // red
+	fg: fgf('31') // red
 }
 
 const so_style = Style{
-	fg: fgg('32') // green
+	fg: fgf('32') // green
 }
 
 const pi_style = Style{
-	fg: fgg('33') // orange
+	fg: fgf('33') // orange
 }
 
 const bd_style = Style{
-	fg: fgg('34')
-	bg: bgg('46')
+	fg: fgf('34')
+	bg: bgf('46')
 }
 
 const cd_style = Style{
-	fg: fgg('34')
-	bg: bgg('43')
+	fg: fgf('34')
+	bg: bgf('43')
 }
 
 fn style_string(s string, style Style) string {
@@ -106,35 +106,35 @@ fn make_style(ansi string) Style {
 			'0' { bold = false }
 			'1' { bold = true }
 			'4' { ul = true }
-			'31' { fg = fgg(code) }
-			'32' { fg = fgg(code) }
-			'33' { fg = fgg(code) }
-			'34' { fg = fgg(code) }
-			'35' { fg = fgg(code) }
-			'36' { fg = fgg(code) }
-			'37' { fg = fgg(code) }
-			'40' { bg = bgg(code) }
-			'41' { bg = bgg(code) }
-			'42' { bg = bgg(code) }
-			'43' { bg = bgg(code) }
-			'44' { bg = bgg(code) }
-			'45' { bg = bgg(code) }
-			'46' { bg = bgg(code) }
-			'47' { bg = bgg(code) }
-			'90' { fg = fgg(code) }
-			'91' { fg = fgg(code) }
-			'92' { fg = fgg(code) }
-			'93' { fg = fgg(code) }
-			'94' { fg = fgg(code) }
-			'95' { fg = fgg(code) }
-			'96' { fg = fgg(code) }
-			'100' { bg = bgg(code) }
-			'101' { bg = bgg(code) }
-			'102' { bg = bgg(code) }
-			'103' { bg = bgg(code) }
-			'104' { bg = bgg(code) }
-			'105' { bg = bgg(code) }
-			'106' { bg = bgg(code) }
+			'31' { fg = fgf(code) }
+			'32' { fg = fgf(code) }
+			'33' { fg = fgf(code) }
+			'34' { fg = fgf(code) }
+			'35' { fg = fgf(code) }
+			'36' { fg = fgf(code) }
+			'37' { fg = fgf(code) }
+			'40' { bg = bgf(code) }
+			'41' { bg = bgf(code) }
+			'42' { bg = bgf(code) }
+			'43' { bg = bgf(code) }
+			'44' { bg = bgf(code) }
+			'45' { bg = bgf(code) }
+			'46' { bg = bgf(code) }
+			'47' { bg = bgf(code) }
+			'90' { fg = fgf(code) }
+			'91' { fg = fgf(code) }
+			'92' { fg = fgf(code) }
+			'93' { fg = fgf(code) }
+			'94' { fg = fgf(code) }
+			'95' { fg = fgf(code) }
+			'96' { fg = fgf(code) }
+			'100' { bg = bgf(code) }
+			'101' { bg = bgf(code) }
+			'102' { bg = bgf(code) }
+			'103' { bg = bgf(code) }
+			'104' { bg = bgf(code) }
+			'105' { bg = bgf(code) }
+			'106' { bg = bgf(code) }
 			else {}
 		}
 	}
@@ -151,13 +151,13 @@ fn no_color(s string) string {
 	return s
 }
 
-fn fgg(code string) fn (string) string {
+fn fgf(code string) fn (string) string {
 	return fn [code] (msg string) string {
 		return term.format(msg, code, '39')
 	}
 }
 
-fn bgg(code string) fn (string) string {
+fn bgf(code string) fn (string) string {
 	return fn [code] (msg string) string {
 		return term.format(msg, code, '49')
 	}
