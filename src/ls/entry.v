@@ -43,7 +43,7 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 
 	filetype := stat.get_filetype()
 	is_link := filetype == os.FileType.symbolic_link
-	link_origin := if is_link { read_link(os.abs_path(file)) } else { '' }
+	link_origin := if is_link { read_link(os.join_path(dir_name, file)) } else { '' }
 	follow_link := is_link && args.link_origin && args.long_format
 
 	if follow_link && !invalid {
