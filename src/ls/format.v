@@ -31,52 +31,58 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 	max_rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
 
 	for r := 0; r < max_rows; r += 1 {
+		mut output := ''
 		for c := 0; c < max_cols; c += 1 {
 			idx := r + c * max_rows
 			if idx < entries.len {
 				entry := entries[idx]
-				print_cell(entry.name, len, .left, get_style_for(entry, args), args)
+				output += print_cell(entry.name, len, .left, get_style_for(entry, args),
+					args)
 			}
 		}
-		println('')
+		println(output)
 	}
 }
 
 fn format_by_lines(entries []Entry, width int, args Args) {
 	len := entries.max_name_len() + cell_spacing
 	max_cols := mathutil.min(width / len, cell_max)
+	mut output := ''
 
 	for i, entry in entries {
-		if i % max_cols == 0 {
-			println('')
+		if i % max_cols == 0 && i != 0 {
+			println(output)
+			output = ''
 		}
-		print_cell(entry.name, len, .left, get_style_for(entry, args), args)
+		output += print_cell(entry.name, len, .left, get_style_for(entry, args), args)
 	}
 	if entries.len % max_cols != 0 {
-		println('')
+		println(output)
 	}
 }
 
 fn format_one_per_line(entries []Entry, args Args) {
 	for entry in entries {
-		print_cell(entry.name, 0, .left, get_style_for(entry, args), args)
-		println('')
+		println(print_cell(entry.name, 0, .left, get_style_for(entry, args), args))
 	}
 }
 
 fn format_with_commas(entries []Entry, args Args) {
+	mut output := ''
 	last := entries.len - 1
 	for i, entry in entries {
 		content := if i < last { '${entry.name}, ' } else { entry.name }
-		print_cell(content, 0, .left, no_style, args)
+		output += print_cell(content, 0, .left, no_style, args)
 	}
+	println(output)
 }
 
-fn print_cell(s string, width int, align Align, style Style, args Args) {
+fn print_cell(s string, width int, align Align, style Style, args Args) string {
+	mut output := ''
 	pad := width - term.strip_ansi(s).runes().len
 
 	if align == .right && pad > 0 {
-		print(' '.repeat(pad))
+		output += ' '.repeat(pad)
 	}
 
 	content := if args.colorize {
@@ -84,16 +90,18 @@ fn print_cell(s string, width int, align Align, style Style, args Args) {
 	} else {
 		term.strip_ansi(s)
 	}
-	print(content)
+	output += content
 
 	if align == .left && pad > 0 {
-		print(' '.repeat(pad))
+		output += ' '.repeat(pad)
 	}
+
+	return output
 }
 
 fn print_dir_name(name string, args Args) {
 	if name.len > 0 {
-		println('')
+		print('\n')
 		nm := if args.colorize { style_string(name, args.style_di) } else { name }
 		println('${nm}:')
 	}
