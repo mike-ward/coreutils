@@ -1,4 +1,5 @@
 import arrays
+import strings
 import term
 import v.mathutil
 
@@ -29,15 +30,15 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 	max_cols := mathutil.min(width / len, cell_max)
 	partial_row := entries.len % max_cols != 0
 	max_rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
+	mut output := strings.new_builder(200)
 
 	for r := 0; r < max_rows; r += 1 {
-		mut output := ''
 		for c := 0; c < max_cols; c += 1 {
 			idx := r + c * max_rows
 			if idx < entries.len {
 				entry := entries[idx]
-				output += print_cell(entry.name, len, .left, get_style_for(entry, args),
-					args)
+				output.write_string(print_cell(entry.name, len, .left, get_style_for(entry, args),
+					args))
 			}
 		}
 		println(output)
@@ -47,14 +48,13 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 fn format_by_lines(entries []Entry, width int, args Args) {
 	len := entries.max_name_len() + cell_spacing
 	max_cols := mathutil.min(width / len, cell_max)
-	mut output := ''
+	mut output := strings.new_builder(200)
 
 	for i, entry in entries {
 		if i % max_cols == 0 && i != 0 {
 			println(output)
-			output = ''
 		}
-		output += print_cell(entry.name, len, .left, get_style_for(entry, args), args)
+		output.write_string(print_cell(entry.name, len, .left, get_style_for(entry, args), args))
 	}
 	if entries.len % max_cols != 0 {
 		println(output)
@@ -68,11 +68,11 @@ fn format_one_per_line(entries []Entry, args Args) {
 }
 
 fn format_with_commas(entries []Entry, args Args) {
-	mut output := ''
+	mut output := strings.new_builder(200)
 	last := entries.len - 1
 	for i, entry in entries {
 		content := if i < last { '${entry.name}, ' } else { entry.name }
-		output += print_cell(content, 0, .left, no_style, args)
+		output.write_string(print_cell(content, 0, .left, no_style, args))
 	}
 	println(output)
 }

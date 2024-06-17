@@ -34,11 +34,9 @@ fn format_long_listing(entries []Entry, args Args) {
 			longest_size, longest_file)
 	}
 
-	mut output := strings.new_builder(200)
+	mut output := strings.new_builder(300)
 
 	for idx, entry in entries {
-		output.clear()
-
 		// spacer row
 		if args.blocked_output {
 			if idx % block_size == 0 && idx != 0 {
