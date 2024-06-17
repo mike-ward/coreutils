@@ -1,5 +1,6 @@
 import arrays
 import os
+import term
 import time
 import v.mathutil { max }
 
@@ -13,6 +14,9 @@ const date_title = 'Date (modified)'
 const name_title = 'Name'
 const unknown = '?'
 const block_size = 5
+const space = ' '
+const date_format = 'MMM DD YYYY HH:MM:ss'
+const invalid_date_format = '????????????????????'
 
 fn format_long_listing(entries []Entry, args Args) {
 	longest_inode := longest_inode_len(entries, inode_title, args)
@@ -22,6 +26,11 @@ fn format_long_listing(entries []Entry, args Args) {
 	longest_size := longest_size_len(entries, size_title, args)
 	longest_file := longest_file_name_len(entries, name_title, args)
 	dim := if args.no_dim { no_style } else { dim_style }
+
+	if args.header {
+		print_header(args, longest_inode, longest_nlink, longest_owner_name, longest_group_name,
+			longest_size, longest_file)
+	}
 
 	for idx, entry in entries {
 		// spacer row
@@ -114,40 +123,58 @@ fn format_long_listing(entries []Entry, args Args) {
 	}
 }
 
-// fn header_rows(cells []Cell, args Args) []Row {
-// 	mut rows := []Row{}
-// 	mut cols := []Cell{}
-// 	dim := if args.no_dim { no_style } else { dim_style }
+fn print_header(args Args, longest_inode int, longest_nlink int, longest_owner_name int, longest_group_name int, longest_size int, longest_file int) {
+	if !args.header {
+		return
+	}
 
-// 	for col in cells {
-// 		cols << Cell{
-// 			content: if col.title.len > 0 { col.title } else { ' ' }
-// 			width: col.width
-// 			right_align: col.right_align
-// 			style: dim
-// 		}
-// 	}
+	mut buffer := ''
+	dim := if args.no_dim { no_style } else { dim_style }
 
-// 	rows << Row{
-// 		cells: cols
-// 	}
+	if args.inode {
+		buffer += left_pad(inode_title, longest_inode)
+	}
+	if !args.no_permissions {
+		buffer += left_pad('T ${permissions_title}', 0)
+	}
+	if !args.no_hard_links {
+		buffer += left_pad(links_title, longest_nlink)
+	}
+	if !args.no_owner_name {
+		buffer += left_pad(owner_title, longest_owner_name)
+	}
+	if !args.no_group_name {
+		buffer += left_pad(group_title, longest_group_name)
+	}
+	if !args.no_size {
+		buffer += left_pad(size_title, longest_size)
+	}
+	if !args.no_date {
+		buffer += right_pad(date_title, invalid_date_format.len)
+	}
 
-// 	len := arrays.sum(cells.map(it.width)) or { 0 }
+	buffer += space + name_title
+	print_cell(buffer, 0, .left, dim, args)
+	println('')
 
-// 	rows << Row{
-// 		cells: [
-// 			Cell{
-// 				content: '┈'.repeat(len)
-// 				style: dim
-// 			},
-// 		]
-// 	}
+	div_len := term.strip_ansi(buffer).len + longest_file - name_title.len
+	divider := '┈'.repeat(div_len)
+	print_cell(divider, 0, .left, dim, args)
+	println('')
+}
 
-// 	return rows
-// }
+fn left_pad(s string, width int) string {
+	pad := width - s.len
+	return if pad > 0 { space.repeat(pad) + s + space } else { s + space }
+}
+
+fn right_pad(s string, width int) string {
+	pad := width - s.len
+	return if pad > 0 { s + space.repeat(pad) + space } else { s + space }
+}
 
 fn print_space() {
-	print(' ')
+	print(space)
 }
 
 fn statistics(entries []Entry, args Args) {
@@ -225,15 +252,12 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 }
 
 fn print_time(entry Entry, args Args) {
-	date_format := 'MMM DD YYYY HH:MM:ss'
-	invalid_fmt := '????????????????????'
-
 	date := time.unix(entry.stat.ctime)
 		.local()
 		.custom_format(date_format)
 
 	dim := if args.no_dim { no_style } else { dim_style }
-	content := if entry.invalid { invalid_fmt } else { date }
+	content := if entry.invalid { invalid_date_format } else { date }
 	print_cell(content, date_format.len, .left, dim, args)
 }
 
@@ -273,7 +297,8 @@ fn longest_inode_len(entries []Entry, title string, args Args) int {
 }
 
 fn longest_file_name_len(entries []Entry, title string, args Args) int {
-	lengths := entries.map(it.name.len + it.link_origin.len + 4)
+	lengths := entries.map(it.name.len + it.link_origin.len +
+		if it.link_origin.len > 0 { 4 } else { 0 })
 	max := arrays.max(lengths) or { 0 }
 	return if !args.header { max } else { max(max, title.len) }
 }

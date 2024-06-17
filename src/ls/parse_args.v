@@ -79,9 +79,7 @@ fn parse_args(args []string) Args {
 	all := fp.bool('', `a`, false, 'include entries starting with .')
 	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	colorize := fp.bool('', `c`, false, 'color the listing')
-	only_dirs := fp.bool('', `d`, false, 'list only directories')
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
-	only_files := fp.bool('', `f`, false, 'list only files')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
 	page_output := fp.bool('', `p`, false, 'page list screen at a time')
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
@@ -90,6 +88,8 @@ fn parse_args(args []string) Args {
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
 	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit\n\nFiltering and Sorting Options:')
 
+	only_dirs := fp.bool('', `d`, false, 'list only directories')
+	only_files := fp.bool('', `f`, false, 'list only files')
 	dirs_first := fp.bool('', `g`, false, 'group directories before files')
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
 	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')

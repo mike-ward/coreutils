@@ -28,7 +28,9 @@ fn sort(entries []Entry, args Args) []Entry {
 		}
 		args.sort_width {
 			fn (a &Entry, b &Entry) int {
-				result := a.name.len - b.name.len
+				a_len := a.name.len + a.link_origin.len + if a.link_origin.len > 0 { 4 } else { 0 }
+				b_len := b.name.len + b.link_origin.len + if b.link_origin.len > 0 { 4 } else { 0 }
+				result := a_len - b_len
 				return if result != 0 { result } else { compare_strings(a.name, b.name) }
 			}
 		}
