@@ -35,15 +35,16 @@ fn get_entries(files []string, args Args) []Entry {
 
 fn make_entry(file string, dir_name string, args Args) Entry {
 	mut invalid := false
+	path := os.join_path(dir_name, file)
 
-	stat := os.lstat(os.join_path(dir_name, file)) or {
+	stat := os.lstat(path) or {
 		invalid = true
 		os.Stat{}
 	}
 
 	filetype := stat.get_filetype()
 	is_link := filetype == os.FileType.symbolic_link
-	link_origin := if is_link { read_link(os.join_path(dir_name, file)) } else { '' }
+	link_origin := if is_link { read_link(path) } else { '' }
 	follow_link := is_link && args.link_origin && args.long_format
 
 	if follow_link && !invalid {
@@ -52,7 +53,7 @@ fn make_entry(file string, dir_name string, args Args) Entry {
 
 	is_dir := filetype == os.FileType.directory
 	is_file := !is_dir
-	is_exe := os.is_executable(file)
+	is_exe := os.is_executable(path)
 	indicator := if is_dir && args.dir_indicator { '/' } else { '' }
 
 	return Entry{

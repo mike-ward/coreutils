@@ -62,7 +62,7 @@ fn format_long_listing(entries []Entry, args Args) {
 		// octal permissions
 		if args.octal_permissions {
 			content := print_octal_permissions(entry, args)
-			print_cell(content, 4, .left, no_style, args)
+			print_cell(content, 4, .left, dim, args)
 			print_space()
 		}
 
@@ -96,7 +96,7 @@ fn format_long_listing(entries []Entry, args Args) {
 				args.size_kb && args.size_kb { entry.size_kb }
 				else { entry.stat.size.str() }
 			}
-			print_cell(content, longest_size, .right, args.style_fi, args)
+			print_cell(content, longest_size, .right, get_style_for(entry, args), args)
 			print_space()
 		}
 
@@ -223,7 +223,7 @@ fn file_flag(entry Entry, args Args) string {
 		entry.invalid { unknown }
 		entry.link { style_string('l', args.style_ln) }
 		entry.dir { style_string('d', args.style_di) }
-		entry.exe { style_string('e', args.style_ex) }
+		entry.exe { style_string('x', args.style_ex) }
 		entry.fifo { style_string('p', args.style_pi) }
 		entry.block { style_string('b', args.style_bd) }
 		entry.character { style_string('c', args.style_cd) }
