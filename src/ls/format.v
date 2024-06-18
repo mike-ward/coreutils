@@ -27,9 +27,11 @@ fn format(entries []Entry, args Args) {
 
 fn format_by_cells(entries []Entry, width int, args Args) {
 	len := entries.max_name_len() + cell_spacing
-	max_cols := mathutil.min(width / len, cell_max)
+	cols := mathutil.min(width / len, cell_max)
+	max_cols := mathutil.max(cols, 1)
 	partial_row := entries.len % max_cols != 0
-	max_rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
+	rows := entries.len / max_cols + if partial_row { 1 } else { 0 }
+	max_rows := mathutil.max(1, rows)
 	mut line := strings.new_builder(200)
 
 	for r := 0; r < max_rows; r += 1 {
@@ -47,7 +49,8 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 
 fn format_by_lines(entries []Entry, width int, args Args) {
 	len := entries.max_name_len() + cell_spacing
-	max_cols := mathutil.min(width / len, cell_max)
+	cols := mathutil.min(width / len, cell_max)
+	max_cols := mathutil.max(cols, 1)
 	mut line := strings.new_builder(200)
 
 	for i, entry in entries {
@@ -87,12 +90,11 @@ fn format_cell(s string, width int, align Align, style Style, args Args) string 
 		cell += space.repeat(pad)
 	}
 
-	content := if args.colorize {
+	cell += if args.colorize {
 		style_string(s, style, args)
 	} else {
 		no_ansi_s
 	}
-	cell += content
 
 	if align == .left && pad > 0 {
 		cell += space.repeat(pad)
