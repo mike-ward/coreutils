@@ -76,9 +76,6 @@ fn parse_args(args []string) Args {
 	fp.description('List information about FILES')
 	fp.arguments_description('[FILES]')
 
-	// eol := common.eol()
-	// wrap := eol + flag.space
-
 	all := fp.bool('', `a`, false, 'include files starting with .')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
