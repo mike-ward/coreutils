@@ -88,7 +88,7 @@ fn print_cell(s string, width int, align Align, style Style, args Args) string {
 	}
 
 	content := if args.colorize {
-		style_string(s, style)
+		style_string(s, style, args)
 	} else {
 		no_ansi_s
 	}
@@ -104,7 +104,7 @@ fn print_cell(s string, width int, align Align, style Style, args Args) string {
 fn print_dir_name(name string, args Args) {
 	if name.len > 0 {
 		print('\n')
-		nm := if args.colorize { style_string(name, args.style_di) } else { name }
+		nm := if args.colorize { style_string(name, args.style_di, args) } else { name }
 		println('${nm}:')
 	}
 }

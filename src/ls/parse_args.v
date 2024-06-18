@@ -2,23 +2,24 @@ module main
 
 import common
 import flag
+import term
 
 const app_name = 'ls'
 const current_dir = ['.']
 
 struct Args {
 	// display options
-	long_format    bool
-	list_by_lines  bool
-	one_per_line   bool
-	dir_indicator  bool
-	with_commas    bool
-	colorize       bool
-	width_in_cols  int
-	page_output    bool
-	blocked_output bool
-	no_dim         bool
-	full_path      bool
+	long_format              bool
+	list_by_lines            bool
+	one_per_line             bool
+	dir_indicator            bool
+	with_commas              bool
+	colorize                 bool
+	width_in_cols            int
+	blocked_output           bool
+	no_dim                   bool
+	full_path                bool
+	can_show_color_on_stdout bool
 	//
 	// filter, group and sorting options
 	all             bool
@@ -81,7 +82,6 @@ fn parse_args(args []string) Args {
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
-	page_output := fp.bool('', `p`, false, 'page list screen at a time')
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
 	recursion_depth := fp.int('depth', ` `, max_int, 'Limit depth of recursion')
 	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
@@ -135,7 +135,6 @@ fn parse_args(args []string) Args {
 		list_by_lines: list_by_lines
 		long_format: long_format
 		one_per_line: one_per_line
-		page_output: page_output
 		with_commas: with_commas
 		colorize: colorize
 		no_dim: no_dim
@@ -174,6 +173,7 @@ fn parse_args(args []string) Args {
 		style_bd: style_map['bd']
 		style_cd: style_map['cd']
 		style_so: style_map['so']
+		can_show_color_on_stdout: term.can_show_color_on_stdout()
 	}
 }
 

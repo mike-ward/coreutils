@@ -52,8 +52,8 @@ const cd_style = Style{
 	bg: bgf('43')
 }
 
-fn style_string(s string, style Style) string {
-	if !term.can_show_color_on_stdout() {
+fn style_string(s string, style Style, args Args) string {
+	if !args.can_show_color_on_stdout {
 		return s
 	}
 	mut out := style.fg(s)

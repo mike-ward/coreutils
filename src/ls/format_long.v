@@ -175,17 +175,17 @@ fn statistics(entries []Entry, args Args) {
 	mut stats := ''
 
 	dim := if args.no_dim { no_style } else { dim_style }
-	file_count_styled := style_string(file_count.str(), args.style_fi)
+	file_count_styled := style_string(file_count.str(), args.style_fi, args)
 
-	files := style_string('files', dim)
-	dir_count_styled := style_string(dir_count.str(), args.style_di)
+	files := style_string('files', dim, args)
+	dir_count_styled := style_string(dir_count.str(), args.style_di, args)
 
-	dirs := style_string('dirs', dim)
+	dirs := style_string('dirs', dim, args)
 	stats = '${file_count_styled} ${files} ${dir_count_styled} ${dirs}'
 
 	if link_count > 0 {
-		link_count_styled := style_string(link_count.str(), args.style_ln)
-		links := style_string('links', dim)
+		link_count_styled := style_string(link_count.str(), args.style_ln, args)
+		links := style_string('links', dim, args)
 		stats += ' ${link_count_styled} ${links}'
 	}
 
@@ -208,14 +208,14 @@ fn format_entry_name(entry Entry, args Args) string {
 fn file_flag(entry Entry, args Args) string {
 	return match true {
 		entry.invalid { unknown }
-		entry.link { style_string('l', args.style_ln) }
-		entry.dir { style_string('d', args.style_di) }
-		entry.exe { style_string('x', args.style_ex) }
-		entry.fifo { style_string('p', args.style_pi) }
-		entry.block { style_string('b', args.style_bd) }
-		entry.character { style_string('c', args.style_cd) }
-		entry.socket { style_string('s', args.style_so) }
-		entry.file { style_string('f', args.style_fi) }
+		entry.link { style_string('l', args.style_ln, args) }
+		entry.dir { style_string('d', args.style_di, args) }
+		entry.exe { style_string('x', args.style_ex, args) }
+		entry.fifo { style_string('p', args.style_pi, args) }
+		entry.block { style_string('b', args.style_bd, args) }
+		entry.character { style_string('c', args.style_cd, args) }
+		entry.socket { style_string('s', args.style_so, args) }
+		entry.file { style_string('f', args.style_fi, args) }
 		else { ' ' }
 	}
 }
@@ -235,11 +235,11 @@ fn permissions(entry Entry, args Args) string {
 
 fn file_permission(file_permission os.FilePermission, args Args) string {
 	dim := if args.no_dim { no_style } else { dim_style }
-	dash := style_string('-', dim)
-	rr := if file_permission.read { style_string('r', args.style_ln) } else { dash }
-	ww := if file_permission.write { style_string('w', args.style_fi) } else { dash }
-	xx := if file_permission.execute { style_string('x', args.style_ex) } else { dash }
-	return '${rr}${ww}${xx}'
+	dash := style_string('-', dim, args)
+	r := if file_permission.read { style_string('r', args.style_ln, args) } else { dash }
+	w := if file_permission.write { style_string('w', args.style_fi, args) } else { dash }
+	x := if file_permission.execute { style_string('x', args.style_ex, args) } else { dash }
+	return '${r}${w}${x}'
 }
 
 fn print_time(entry Entry, args Args) string {

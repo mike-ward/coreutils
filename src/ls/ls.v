@@ -33,3 +33,11 @@ fn ls(entries []Entry, args Args) {
 		}
 	}
 }
+
+// fn cyclic_check(entry Entry) bool {
+
+// }
+
+// fn remove_from_cyclic_check(entry Entry) {
+
+// }
