@@ -1,13 +1,15 @@
 import arrays { group_by }
+import datatypes { Set }
 import os
 
 fn main() {
 	args := parse_args(os.args)
 	entries := get_entries(args.files, args)
-	ls(entries, args)
+	mut cyclic := Set[string]{}
+	ls(entries, args, mut cyclic)
 }
 
-fn ls(entries []Entry, args Args) {
+fn ls(entries []Entry, args Args, mut cyclic Set[string]) {
 	group_by_dirs := group_by[string, Entry](entries, fn (e Entry) string {
 		return e.dir_name
 	})
@@ -24,20 +26,18 @@ fn ls(entries []Entry, args Args) {
 
 		if args.recursive {
 			for entry in sorted {
+				entry_path := os.join_path(entry.dir_name, entry.name)
 				if entry.dir {
-					entry_path := os.join_path(entry.dir_name, entry.name)
+					if cyclic.exists(entry_path) {
+						println('===> cyclic reference detected <===')
+						continue
+					}
+					cyclic.add(entry_path)
 					dir_entries := get_entries([entry_path], args)
-					ls(dir_entries, args)
+					ls(dir_entries, args, mut cyclic)
+					cyclic.remove(entry_path)
 				}
 			}
 		}
 	}
 }
-
-// fn cyclic_check(entry Entry) bool {
-
-// }
-
-// fn remove_from_cyclic_check(entry Entry) {
-
-// }
