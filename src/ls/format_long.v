@@ -18,7 +18,7 @@ const unknown = '?'
 const block_size = 5
 const space = ' '
 const date_format = 'MMM DD YYYY HH:MM:ss'
-const invalid_date_format = '????????????????????'
+const date_iso_format = 'YYYY-MM-DD HH:MM:ss'
 
 fn format_long_listing(entries []Entry, args Args) {
 	longest_inode := longest_inode_len(entries, inode_title, args)
@@ -100,7 +100,7 @@ fn format_long_listing(entries []Entry, args Args) {
 
 		// date/time
 		if !args.no_date {
-			line.write_string(print_time(entry, args))
+			line.write_string(format_time(entry, args))
 		}
 
 		line.write_string(space + space)
@@ -147,7 +147,8 @@ fn print_header(args Args, longest_inode int, longest_nlink int, longest_owner_n
 		buffer += left_pad(size_title, longest_size)
 	}
 	if !args.no_date {
-		buffer += right_pad(date_title, invalid_date_format.len)
+		width := if args.time_iso { date_iso_format.len } else { date_format.len }
+		buffer += right_pad(date_title, width)
 	}
 
 	buffer += space + name_title
@@ -242,14 +243,14 @@ fn file_permission(file_permission os.FilePermission, args Args) string {
 	return '${r}${w}${x}'
 }
 
-fn print_time(entry Entry, args Args) string {
+fn format_time(entry Entry, args Args) string {
 	date := time.unix(entry.stat.ctime)
 		.local()
-		.custom_format(date_format)
+		.custom_format(if args.time_iso { date_iso_format } else { date_format })
 
 	dim := if args.no_dim { no_style } else { dim_style }
-	content := if entry.invalid { invalid_date_format } else { date }
-	return format_cell(content, date_format.len, .left, dim, args)
+	content := if entry.invalid { '?'.repeat(date.len) } else { date }
+	return format_cell(content, date.len, .left, dim, args)
 }
 
 fn longest_nlink_len(entries []Entry, title string, args Args) int {
