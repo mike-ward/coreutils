@@ -19,6 +19,7 @@ struct Args {
 	blocked_output           bool
 	no_dim                   bool
 	relative_path            bool
+	quote                    bool
 	can_show_color_on_stdout bool
 	//
 	// filter, group and sorting options
@@ -78,15 +79,16 @@ fn parse_args(args []string) Args {
 	// eol := common.eol()
 	// wrap := eol + flag.space
 
-	all := fp.bool('', `a`, false, 'include entries starting with .')
+	all := fp.bool('', `a`, false, 'include files starting with .')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
-	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
+	with_commas := fp.bool('', `m`, false, 'list of files separated by commas')
+	quote := fp.bool('', `q`, false, 'enclose files in quotes')
 	recursive := fp.bool('', `R`, false, 'list subdirectories recursively')
-	recursion_depth := fp.int('depth', ` `, max_int, 'Limit depth of recursion')
-	list_by_lines := fp.bool('', `X`, false, 'list entries by lines instead of by columns')
+	recursion_depth := fp.int('depth', ` `, max_int, 'limit depth of recursion')
+	list_by_lines := fp.bool('', `X`, false, 'list files by lines instead of by columns')
 	one_per_line := fp.bool('', `1`, false, 'list one file per line')
-	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>. 0 means no limit\n\nFiltering and Sorting Options:')
+	width_in_cols := fp.int('width', ` `, 0, 'set output width to <int>\n\nFiltering and Sorting Options:')
 
 	only_dirs := fp.bool('', `d`, false, 'list only directories')
 	only_files := fp.bool('', `f`, false, 'list only files')
@@ -96,7 +98,7 @@ fn parse_args(args []string) Args {
 	sort_time := fp.bool('', `t`, false, 'sort by time, newest first')
 	sort_natural := fp.bool('', `v`, false, 'sort digits within text as numbers')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
-	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
+	sort_ext := fp.bool('', `x`, false, 'sort by file extension')
 	sort_none := fp.bool('', `u`, false, 'no sorting\n\nLong Listing Options:')
 
 	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
@@ -108,7 +110,7 @@ fn parse_args(args []string) Args {
 	relative_path := fp.bool('', `p`, false, 'show relative path')
 	header := fp.bool('header', ` `, false, 'show column headers')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
-	time_iso := fp.bool('iso', ` `, false, 'show time is iso format\n')
+	time_iso := fp.bool('iso', ` `, false, 'show time in iso format')
 	no_count := fp.bool('no-counts', ` `, false, 'hide file/dir counts')
 	no_date := fp.bool('no-date', ` `, false, 'hide date')
 	no_dim := fp.bool('no-dim', ` `, false, 'hide shading; useful for light backgrounds')
@@ -153,6 +155,7 @@ fn parse_args(args []string) Args {
 		one_per_line: one_per_line
 		only_dirs: only_dirs
 		only_files: only_files
+		quote: quote
 		recursion_depth: recursion_depth
 		recursive: recursive
 		relative_path: relative_path

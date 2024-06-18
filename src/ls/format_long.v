@@ -202,6 +202,7 @@ fn format_entry_name(entry Entry, args Args) string {
 
 	return match true {
 		entry.link { '${name} -> ${entry.link_origin}' }
+		args.quote { '"${name}"' }
 		else { name }
 	}
 }
