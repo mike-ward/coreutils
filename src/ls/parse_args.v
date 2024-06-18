@@ -18,7 +18,7 @@ struct Args {
 	width_in_cols            int
 	blocked_output           bool
 	no_dim                   bool
-	full_path                bool
+	relative_path            bool
 	can_show_color_on_stdout bool
 	//
 	// filter, group and sorting options
@@ -50,6 +50,7 @@ struct Args {
 	no_count          bool
 	link_origin       bool
 	octal_permissions bool
+	time_iso          bool
 	//
 	// from ls colors
 	style_di Style
@@ -71,14 +72,13 @@ fn parse_args(args []string) Args {
 	fp.application(app_name)
 	fp.version(common.coreutils_version())
 	fp.skip_executable()
-	fp.description('List information about FILES (current directory by default)')
+	fp.description('List information about FILES')
 	fp.arguments_description('[FILES]')
 
 	// eol := common.eol()
 	// wrap := eol + flag.space
 
 	all := fp.bool('', `a`, false, 'include entries starting with .')
-	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	colorize := fp.bool('', `c`, false, 'color the listing')
 	dir_indicator := fp.bool('', `D`, false, 'append / to directories')
 	with_commas := fp.bool('', `m`, false, 'comma separated list of entries')
@@ -94,23 +94,24 @@ fn parse_args(args []string) Args {
 	sort_reverse := fp.bool('', `r`, false, 'reverse the listing order')
 	sort_size := fp.bool('', `s`, false, 'sort by file size, largest first')
 	sort_time := fp.bool('', `t`, false, 'sort by time, newest first')
-	sort_natural := fp.bool('', `v`, false, 'sort numbers within text naturally')
+	sort_natural := fp.bool('', `v`, false, 'sort digits within text as numbers')
 	sort_width := fp.bool('', `w`, false, 'sort by width, shortest first')
 	sort_ext := fp.bool('', `x`, false, 'sort by entry extension')
 	sort_none := fp.bool('', `u`, false, 'no sorting\n\nLong Listing Options:')
 
+	blocked_output := fp.bool('', `b`, false, 'blank line every 5 rows')
 	size_ki := fp.bool('', `k`, false, 'sizes in kibibytes (1024) (e.g. 1k 234m 2g)')
 	size_kb := fp.bool('', `K`, false, 'sizes in Kilobytes (1000) (e.g. 1kb 234mb 2gb)')
-	long_format := fp.bool('', `l`, false, 'long listing format')
-	octal_permissions := fp.bool('', `o`, false, 'show octal permissions')
+	long_format := fp.bool('', `l`, false, 'show long listing format')
 	link_origin := fp.bool('', `L`, false, "show link's origin information")
-
-	full_path := fp.bool('full-path', ` `, false, 'show full path')
-	header := fp.bool('header', ` `, false, 'show header rows')
+	octal_permissions := fp.bool('', `o`, false, 'show octal permissions')
+	relative_path := fp.bool('', `p`, false, 'show relative path')
+	header := fp.bool('header', ` `, false, 'show column headers')
 	inode := fp.bool('inode', ` `, false, 'show inodes')
+	time_iso := fp.bool('iso', ` `, false, 'show time is iso format\n')
 	no_count := fp.bool('no-counts', ` `, false, 'hide file/dir counts')
 	no_date := fp.bool('no-date', ` `, false, 'hide date')
-	no_dim := fp.bool('no-dim', ` `, false, 'no dim shading; useful for light backgrounds')
+	no_dim := fp.bool('no-dim', ` `, false, 'hide shading; useful for light backgrounds')
 	no_group_name := fp.bool('no-group', ` `, false, 'hide group name')
 	no_hard_links := fp.bool('no-hard-links', ` `, false, 'hide hard links count')
 	no_owner_name := fp.bool('no-owner', ` `, false, 'hide owner name')
@@ -129,51 +130,52 @@ fn parse_args(args []string) Args {
 
 	return Args{
 		all: all
+		blocked_output: blocked_output
+		can_show_color_on_stdout: term.can_show_color_on_stdout()
+		colorize: colorize
+		dir_indicator: dir_indicator
 		dirs_first: dirs_first
-		only_dirs: only_dirs
-		only_files: only_files
+		files: if files == [] { current_dir } else { files }
+		header: header
+		inode: inode
+		link_origin: link_origin
 		list_by_lines: list_by_lines
 		long_format: long_format
-		one_per_line: one_per_line
-		with_commas: with_commas
-		colorize: colorize
+		no_count: no_count
+		no_date: no_date
 		no_dim: no_dim
-		width_in_cols: width_in_cols
-		dir_indicator: dir_indicator
-		blocked_output: blocked_output
+		no_group_name: no_group_name
+		no_hard_links: no_hard_links
+		no_owner_name: no_owner_name
+		no_permissions: no_permissions
+		no_size: no_size
+		octal_permissions: octal_permissions
+		one_per_line: one_per_line
+		only_dirs: only_dirs
+		only_files: only_files
+		recursion_depth: recursion_depth
+		recursive: recursive
+		relative_path: relative_path
+		size_kb: size_kb
+		size_ki: size_ki
+		sort_ext: sort_ext
+		sort_natural: sort_natural
+		sort_none: sort_none
 		sort_reverse: sort_reverse
 		sort_size: sort_size
 		sort_time: sort_time
 		sort_width: sort_width
-		sort_ext: sort_ext
-		sort_natural: sort_natural
-		sort_none: sort_none
-		recursive: recursive
-		recursion_depth: recursion_depth
-		size_ki: size_ki
-		size_kb: size_kb
-		link_origin: link_origin
-		full_path: full_path
-		header: header
-		inode: inode
-		no_permissions: no_permissions
-		octal_permissions: octal_permissions
-		no_hard_links: no_hard_links
-		no_owner_name: no_owner_name
-		no_group_name: no_group_name
-		no_size: no_size
-		no_date: no_date
-		no_count: no_count
-		files: if files == [] { current_dir } else { files }
-		style_di: style_map['di']
-		style_fi: style_map['fi']
-		style_ln: style_map['ln']
-		style_ex: style_map['ex']
-		style_pi: style_map['pi']
 		style_bd: style_map['bd']
 		style_cd: style_map['cd']
+		style_di: style_map['di']
+		style_ex: style_map['ex']
+		style_fi: style_map['fi']
+		style_ln: style_map['ln']
+		style_pi: style_map['pi']
 		style_so: style_map['so']
-		can_show_color_on_stdout: term.can_show_color_on_stdout()
+		time_iso: time_iso
+		width_in_cols: width_in_cols
+		with_commas: with_commas
 	}
 }
 

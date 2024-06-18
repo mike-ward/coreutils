@@ -26,7 +26,7 @@ fn format(entries []Entry, args Args) {
 }
 
 fn format_by_cells(entries []Entry, width int, args Args) {
-	len := entries.max_name_len() + cell_spacing
+	len := entries.max_name_len(args) + cell_spacing
 	cols := mathutil.min(width / len, cell_max)
 	max_cols := mathutil.max(cols, 1)
 	partial_row := entries.len % max_cols != 0
@@ -39,8 +39,9 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 			idx := r + c * max_rows
 			if idx < entries.len {
 				entry := entries[idx]
-				line.write_string(format_cell(entry.name, len, .left, get_style_for(entry,
-					args), args))
+				name := format_entry_name(entry, args)
+				line.write_string(format_cell(name, len, .left, get_style_for(entry, args),
+					args))
 			}
 		}
 		println(line)
@@ -48,7 +49,7 @@ fn format_by_cells(entries []Entry, width int, args Args) {
 }
 
 fn format_by_lines(entries []Entry, width int, args Args) {
-	len := entries.max_name_len() + cell_spacing
+	len := entries.max_name_len(args) + cell_spacing
 	cols := mathutil.min(width / len, cell_max)
 	max_cols := mathutil.max(cols, 1)
 	mut line := strings.new_builder(200)
@@ -57,8 +58,8 @@ fn format_by_lines(entries []Entry, width int, args Args) {
 		if i % max_cols == 0 && i != 0 {
 			println(line)
 		}
-		line.write_string(format_cell(entry.name, len, .left, get_style_for(entry, args),
-			args))
+		name := format_entry_name(entry, args)
+		line.write_string(format_cell(name, len, .left, get_style_for(entry, args), args))
 	}
 	if entries.len % max_cols != 0 {
 		println(line)
@@ -111,8 +112,8 @@ fn print_dir_name(name string, args Args) {
 	}
 }
 
-fn (entries []Entry) max_name_len() int {
-	lengths := entries.map(it.name.len)
+fn (entries []Entry) max_name_len(args Args) int {
+	lengths := entries.map(format_entry_name(it, args).len)
 	return arrays.max(lengths) or { 0 }
 }
 

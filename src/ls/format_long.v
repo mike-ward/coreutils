@@ -193,7 +193,7 @@ fn statistics(entries []Entry, args Args) {
 }
 
 fn format_entry_name(entry Entry, args Args) string {
-	name := if args.full_path {
+	name := if args.relative_path {
 		os.join_path(entry.dir_name, entry.name)
 	} else {
 		entry.name
