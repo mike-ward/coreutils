@@ -62,24 +62,24 @@ fn get_options() Options {
 		sort order.  Set LC_ALL=C to get the traditional sort order that
 		uses native byte values.
 
-		Sort numerically: The number begins each line and consists
-		of optional blanks, an optional ‘-’ sign, and zero or
-		more digits possibly separated by thousands separators,
-		optionally followed by a decimal-point character and zero or
-		more digits. An empty number is treated as ‘0’. Signs on
-		zeros and leading zeros do not affect ordering.
+		Sort numerically: The number begins each line and consists of
+		optional blanks, an optional ‘-’ sign, and zero or more digits
+		possibly separated by thousands separators, optionally followed
+		by a decimal-point character and zero or more digits. An empty
+		number is treated as ‘0’. Signs on zeros and leading zeros do not
+		affect ordering.
 
 		Comparison is exact; there is no rounding error.
 
-		The LC_CTYPE locale specifies which characters are blanks and
-		the LC_NUMERIC locale specifies the thousands separator and
+		The LC_CTYPE locale specifies which characters are blanks and the
+		LC_NUMERIC locale specifies the thousands separator and
 		decimal-point character. In the C locale, spaces and tabs are
-		blanks, there is no thousands separator, and ‘.’ is the
-		decimal point.
+		blanks, there is no thousands separator, and ‘.’ is the decimal
+		point.
 
-		Neither a leading ‘+’ nor exponential notation is
-		recognized. To compare such strings numerically, use the
-		--general-numeric-sort (-g) option.".trim_indent())
+		Neither a leading ‘+’ nor exponential notation is recognized. To
+		compare such strings numerically, use the --general-numeric-sort
+		(-g) option.".trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
