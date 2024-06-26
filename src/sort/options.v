@@ -9,6 +9,11 @@ struct Options {
 	ignore_leading_blanks bool
 	dictionary_order      bool
 	ignore_case           bool
+	general_numeric_sort  bool
+	ignore_non_printing   bool
+	month_sort            bool
+	human_numeric_sort    bool
+	numeric_sort          bool
 	version_sort          bool
 	// other optoins
 	zero_terminated bool
@@ -27,6 +32,12 @@ fn get_options() Options {
 	ignore_leading_blanks := fp.bool('ignore-leading-blanks', `b`, false, 'ignore leading blanks')
 	dictionary_order := fp.bool('dictionary-order', `d`, false, 'consider only blanks and alphanumeric characters')
 	ignore_case := fp.bool('ignore-case', `f`, false, 'fold lower case to upper case characters')
+	general_numeric_sort := fp.bool('general-numeric-sort', `g`, false, 'compare according to general numerical value')
+	ignore_non_printing := fp.bool('ignore-non-printing', `i`, false, 'consider only printable characters')
+	month_sort := fp.bool('month-sort', `M`, false, "compare (unknown) < 'JAN' < ... < 'DEC'")
+	human_numeric_sort := fp.bool('human-numeric-sort', `H`, false, 'compare human readable numbers (e.g., 2K 1G)')
+	numeric_sort := fp.bool('numeric-sort', `n`, false, "compare according to string numerical value\n${flag.space}see 'Sort numerically:' below")
+
 	version_sort := fp.bool('version-sort', `V`, false, 'natural sort of (version) numbers within text\n\nOther options:')
 
 	zero_terminated := fp.bool('zero-terminated', `z`, false, 'line delimiter is NUL, not newline\n')
@@ -49,7 +60,26 @@ fn get_options() Options {
 
 		*** WARNING *** The locale specified by the environment affects
 		sort order.  Set LC_ALL=C to get the traditional sort order that
-		uses native byte values.".trim_indent())
+		uses native byte values.
+
+		Sort numerically: The number begins each line and consists
+		of optional blanks, an optional ‘-’ sign, and zero or
+		more digits possibly separated by thousands separators,
+		optionally followed by a decimal-point character and zero or
+		more digits. An empty number is treated as ‘0’. Signs on
+		zeros and leading zeros do not affect ordering.
+
+		Comparison is exact; there is no rounding error.
+
+		The LC_CTYPE locale specifies which characters are blanks and
+		the LC_NUMERIC locale specifies the thousands separator and
+		decimal-point character. In the C locale, spaces and tabs are
+		blanks, there is no thousands separator, and ‘.’ is the
+		decimal point.
+
+		Neither a leading ‘+’ nor exponential notation is
+		recognized. To compare such strings numerically, use the
+		--general-numeric-sort (-g) option.".trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
@@ -58,6 +88,11 @@ fn get_options() Options {
 		ignore_leading_blanks: ignore_leading_blanks
 		dictionary_order: dictionary_order
 		ignore_case: ignore_case
+		general_numeric_sort: general_numeric_sort
+		ignore_non_printing: ignore_non_printing
+		month_sort: month_sort
+		human_numeric_sort: human_numeric_sort
+		numeric_sort: numeric_sort
 		version_sort: version_sort
 		// other options
 		zero_terminated: zero_terminated
