@@ -6,7 +6,13 @@ import time
 const app_name = 'sort'
 
 struct Options {
-	files []string
+	ignore_leading_blanks bool
+	dictionary_order      bool
+	ignore_case           bool
+	version_sort          bool
+	// other optoins
+	zero_terminated bool
+	files           []string
 }
 
 fn get_options() Options {
@@ -17,6 +23,13 @@ fn get_options() Options {
 	fp.arguments_description('[FILE]')
 	fp.description('\nWrite sorted concatenation of all FILE(s) to standard output.' +
 		'\nWith no FILE, or when FILE is -, read standard input.')
+
+	ignore_leading_blanks := fp.bool('ignore-leading-blanks', `b`, false, 'ignore leading blanks')
+	dictionary_order := fp.bool('dictionary-order', `d`, false, 'consider only blanks and alphanumeric characters')
+	ignore_case := fp.bool('ignore-case', `f`, false, 'fold lower case to upper case characters')
+	version_sort := fp.bool('version-sort', `V`, false, 'natural sort of (version) numbers within text\n\nOther options:')
+
+	zero_terminated := fp.bool('zero-terminated', `z`, false, 'line delimiter is NUL, not newline\n')
 
 	fp.footer("
 
@@ -42,6 +55,12 @@ fn get_options() Options {
 	files := fp.finalize() or { exit_error(err.msg()) }
 
 	return Options{
+		ignore_leading_blanks: ignore_leading_blanks
+		dictionary_order: dictionary_order
+		ignore_case: ignore_case
+		version_sort: version_sort
+		// other options
+		zero_terminated: zero_terminated
 		files: scan_files_arg(files)
 	}
 }
