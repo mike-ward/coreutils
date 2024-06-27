@@ -14,6 +14,10 @@ struct Options {
 	month_sort            bool
 	human_numeric_sort    bool
 	numeric_sort          bool
+	random_sort           bool
+	random_source         string
+	reverse               bool
+	sort_word             string
 	version_sort          bool
 	// other optoins
 	zero_terminated bool
@@ -37,7 +41,10 @@ fn get_options() Options {
 	month_sort := fp.bool('month-sort', `M`, false, "compare (unknown) < 'JAN' < ... < 'DEC'")
 	human_numeric_sort := fp.bool('human-numeric-sort', `H`, false, 'compare human readable numbers (e.g., 2K 1G)')
 	numeric_sort := fp.bool('numeric-sort', `n`, false, "compare according to string numerical value\n${flag.space}see 'Sort numerically:' below")
-
+	random_sort := fp.bool('random-sort', `R`, false, 'shuffle, but group identical keys.')
+	random_source := fp.string('random-source', ` `, '', 'get random bytes from <string> FILE')
+	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons')
+	sort_word := fp.string('sort', ` `, '', 'sort according to WORD: general-numeric -g, human-numeric\n${flag.space}-h, month -M, numeric -n, random -R, version -V')
 	version_sort := fp.bool('version-sort', `V`, false, 'natural sort of (version) numbers within text\n\nOther options:')
 
 	zero_terminated := fp.bool('zero-terminated', `z`, false, 'line delimiter is NUL, not newline\n')
@@ -93,6 +100,10 @@ fn get_options() Options {
 		month_sort: month_sort
 		human_numeric_sort: human_numeric_sort
 		numeric_sort: numeric_sort
+		random_sort: random_sort
+		random_source: random_source
+		reverse: reverse
+		sort_word: sort_word
 		version_sort: version_sort
 		// other options
 		zero_terminated: zero_terminated
