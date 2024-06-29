@@ -10,7 +10,7 @@ struct Options {
 	dictionary_order      bool
 	ignore_case           bool
 	ignore_non_printing   bool
-	numeric_sort          bool
+	numeric               bool
 	reverse               bool
 	version_sort          bool
 	// other optoins
@@ -36,7 +36,7 @@ fn get_options() Options {
 	dictionary_order := fp.bool('dictionary-order', `d`, false, 'consider only blanks and alphanumeric characters')
 	ignore_case := fp.bool('ignore-case', `f`, false, 'fold lower case to upper case characters')
 	ignore_non_printing := fp.bool('ignore-non-printing', `i`, false, 'consider only printable characters')
-	numeric_sort := fp.bool('numeric-sort', `n`, false,
+	numeric := fp.bool('numeric-sort', `n`, false,
 		'compare according to string numerical value\n${flag.space}' +
 		"see 'Sort numerically:' below")
 	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons\n\nOther options:')
@@ -95,7 +95,7 @@ fn get_options() Options {
 		dictionary_order: dictionary_order
 		ignore_case: ignore_case
 		ignore_non_printing: ignore_non_printing
-		numeric_sort: numeric_sort
+		numeric: numeric
 		reverse: reverse
 		// other options
 		check_diagnose: check_diagnose
