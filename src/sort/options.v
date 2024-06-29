@@ -9,24 +9,18 @@ struct Options {
 	ignore_leading_blanks bool
 	dictionary_order      bool
 	ignore_case           bool
-	general_numeric_sort  bool
 	ignore_non_printing   bool
-	month_sort            bool
-	human_numeric_sort    bool
 	numeric_sort          bool
 	reverse               bool
-	sort_word             string
 	version_sort          bool
 	// other optoins
-	check_diagnose  bool
-	check_quiet     bool
-	files0_from     string
-	sort_key        string
-	merge           bool
-	output_file     string
-	unique          bool
-	zero_terminated bool
-	files           []string
+	check_diagnose bool
+	check_quiet    bool
+	sort_key       string
+	merge          bool
+	output_file    string
+	unique         bool
+	files          []string
 }
 
 fn get_options() Options {
@@ -41,18 +35,11 @@ fn get_options() Options {
 	ignore_leading_blanks := fp.bool('ignore-leading-blanks', `b`, false, 'ignore leading blanks')
 	dictionary_order := fp.bool('dictionary-order', `d`, false, 'consider only blanks and alphanumeric characters')
 	ignore_case := fp.bool('ignore-case', `f`, false, 'fold lower case to upper case characters')
-	general_numeric_sort := fp.bool('general-numeric-sort', `g`, false, 'compare according to general numerical value')
 	ignore_non_printing := fp.bool('ignore-non-printing', `i`, false, 'consider only printable characters')
-	month_sort := fp.bool('month-sort', `M`, false, "compare (unknown) < 'JAN' < ... < 'DEC'")
-	human_numeric_sort := fp.bool('human-numeric-sort', `H`, false, 'compare human readable numbers (e.g., 2K 1G)')
 	numeric_sort := fp.bool('numeric-sort', `n`, false,
 		'compare according to string numerical value\n${flag.space}' +
 		"see 'Sort numerically:' below")
-	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons')
-	sort_word := fp.string('sort', ` `, '',
-		'sort according to WORD: general-numeric -g, human-numeric\n${flag.space}' +
-		'-h, month -M, numeric -n, random -R, version -V')
-	version_sort := fp.bool('version-sort', `V`, false, 'natural sort of (version) numbers within text\n\nOther options:')
+	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons\n\nOther options:')
 
 	check_diagnose := fp.bool('', `c`, false, 'check for sorted input; do not sort')
 	check_quiet := fp.bool('', `C`, false, 'like -c, but do not report first bad line')
@@ -61,7 +48,6 @@ fn get_options() Options {
 	output_file := fp.string('output', `o`, '', 'write result to FILE instead of standard output')
 	unique := fp.bool('unique', `u`, false, 'with -c, check for strict ordering;\n${flag.space}' +
 		'without -c, output only the first of an equal run')
-	zero_terminated := fp.bool('zero-terminated', `z`, false, 'line delimiter is NUL, not newline\n')
 
 	fp.footer("
 
@@ -72,8 +58,7 @@ fn get_options() Options {
 		field are counted from the beginning of the preceding whitespace.
 		OPTS is one or more single-letter ordering options [bdfgiMhnRrV],
 		which override global ordering options for that key.  If no key
-		is given, use the entire line as the key.  Use --debug to
-		diagnose incorrect key usage.
+		is given, use the entire line as the key.
 
 		SIZE may be followed by the following multiplicative suffixes: %
 		1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E,
@@ -109,14 +94,9 @@ fn get_options() Options {
 		ignore_leading_blanks: ignore_leading_blanks
 		dictionary_order: dictionary_order
 		ignore_case: ignore_case
-		general_numeric_sort: general_numeric_sort
 		ignore_non_printing: ignore_non_printing
-		month_sort: month_sort
-		human_numeric_sort: human_numeric_sort
 		numeric_sort: numeric_sort
 		reverse: reverse
-		sort_word: sort_word
-		version_sort: version_sort
 		// other options
 		check_diagnose: check_diagnose
 		check_quiet: check_quiet
@@ -124,7 +104,6 @@ fn get_options() Options {
 		merge: merge
 		output_file: output_file
 		unique: unique
-		zero_terminated: zero_terminated
 		files: scan_files_arg(files)
 	}
 }

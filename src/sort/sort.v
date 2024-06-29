@@ -71,54 +71,22 @@ fn is_dictionary_char(e u8) u8 {
 fn sort_general_numeric(mut lines []string, options Options) {
 }
 
-// Sort numerically, first by numeric sign (negative, zero, or positive); then
-// by SI suffix (either empty, or ‘k’ or ‘K’, or one of ‘MGTPEZYRQ’, in that
-// order; see Block size); and finally by numeric value. For example, ‘1023M’
-// sorts before ‘1G’ because ‘M’ (mega) precedes ‘G’ (giga) as an SI suffix.
-// This option sorts values that are consistently scaled to the nearest
-// suffix, regardless of whether suffixes denote powers of 1000 or 1024, and
-// it therefore sorts the output of any single invocation of the df, du, or ls
-// commands that are invoked with their --human-readable or --si options. The
-// syntax for numbers is the same as for the --numeric-sort option; the SI
-// suffix must immediately follow the number. To sort more accurately, you can
-// use the numfmt command to reformat numbers to human format after the sort.
-fn sort_human_numeric_sort(mut lines []string, options Options) {
-}
-
 // This option has no effect if the stronger --dictionary-order (-d) option
 // is also given.
 fn sort_ignore_non_printing(mut lines []string, options Options) {
+	lines.sort_with_compare(fn (a &string, b &string) int {
+		aa := a.bytes().map(is_printable).bytestr()
+		bb := b.bytes().map(is_printable).bytestr()
+		return compare_strings(aa, bb)
+	})
 }
 
-// Sort numerically, first by numeric sign (negative, zero, or positive); then
-// by SI suffix (either empty, or ‘k’ or ‘K’, or one of ‘MGTPEZYRQ’, in that
-// order; see Block size); and finally by numeric value. For example, ‘1023M’
-// sorts before ‘1G’ because ‘M’ (mega) precedes ‘G’ (giga) as an SI suffix.
-// This option sorts values that are consistently scaled to the nearest
-// suffix, regardless of whether suffixes denote powers of 1000 or 1024, and
-// it therefore sorts the output of any single invocation of the df, du, or ls
-// commands that are invoked with their --human-readable or --si options. The
-// syntax for numbers is the same as for the --numeric-sort option; the SI
-// suffix must immediately follow the number. To sort more accurately, you can
-// use the numfmt command to reformat numbers to human format after the sort.
-fn sort_human_numeric(mut lines []string, options Options) {
-}
-
-// An initial string, consisting of any amount of blanks, followed by a month
-// name abbreviation, is folded to UPPER case and compared in the order ‘JAN’
-// < ‘FEB’ < … < ‘DEC’. Invalid names compare low to valid names. The LC_TIME
-// locale category determines the month spellings. By default a blank is a
-// space or a tab, but the LC_CTYPE locale can change this
-fn sort_month(mut lines []string, options Options) {
-}
-
-// Sort by version name and number. It behaves like a standard sort, except
-// that each sequence of decimal digits is treated numerically as an
-// index/version number.
-fn sort_version(mut lines []string, options Options) {
+fn is_printable(e u8) u8 {
+	return if e >= u8(` `) || e <= u8(`~`) { e } else { space }
 }
 
 // Reverse the result of comparison, so that lines with greater key values
 // appear earlier in the output instead of later.
 fn sort_reverse(mut lines []string, options Options) {
+	lines.reverse_in_place()
 }
