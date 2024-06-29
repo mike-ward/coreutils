@@ -14,26 +14,16 @@ struct Options {
 	month_sort            bool
 	human_numeric_sort    bool
 	numeric_sort          bool
-	random_sort           bool
-	random_source         string
 	reverse               bool
 	sort_word             string
 	version_sort          bool
 	// other optoins
-	batch_size      string
 	check_diagnose  bool
 	check_quiet     bool
-	compress_prog   string
-	debug           bool
 	files0_from     string
 	sort_key        string
 	merge           bool
 	output_file     string
-	stable          bool
-	buffer_size     int
-	field_separator string
-	temp_dir        string
-	parallel        int
 	unique          bool
 	zero_terminated bool
 	files           []string
@@ -58,35 +48,17 @@ fn get_options() Options {
 	numeric_sort := fp.bool('numeric-sort', `n`, false,
 		'compare according to string numerical value\n${flag.space}' +
 		"see 'Sort numerically:' below")
-	random_sort := fp.bool('random-sort', `R`, false, 'shuffle, but group identical keys.')
-	random_source := fp.string('random-source', ` `, '', 'get random bytes from FILE')
 	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons')
 	sort_word := fp.string('sort', ` `, '',
 		'sort according to WORD: general-numeric -g, human-numeric\n${flag.space}' +
 		'-h, month -M, numeric -n, random -R, version -V')
 	version_sort := fp.bool('version-sort', `V`, false, 'natural sort of (version) numbers within text\n\nOther options:')
 
-	batch_size := fp.string('batch-size', ` `, '', 'merge at most NMERGE inputs at once; for more use temp files')
 	check_diagnose := fp.bool('', `c`, false, 'check for sorted input; do not sort')
 	check_quiet := fp.bool('', `C`, false, 'like -c, but do not report first bad line')
-	compress_prog := fp.string('compress-prog', ` `, '', 'compress temporaries with PROG; decompress them with PROG -d')
-	debug := fp.bool('debug', ` `, false,
-		'annotate the part of the line used to sort, and warn about\n${flag.space}' +
-		'questionable usage to stderr')
-	files0_from := fp.string('files0_from', ` `, '',
-		'read input from the files specified by\n${flag.space}' +
-		'NUL-terminated names in file F;\n${flag.space}' +
-		'If F is - then read names from standard input')
 	sort_key := fp.string('key', `k`, '', 'sort via a key; <string> gives location and type')
 	merge := fp.bool('merge', `m`, false, 'merge already sorted files; do not sort')
 	output_file := fp.string('output', `o`, '', 'write result to FILE instead of standard output')
-	stable := fp.bool('stable', `s`, false, 'stabilize sort by disabling last-resort comparison')
-	buffer_size := fp.int('buffer-size', `S`, 0, 'use <int> for main memory buffer')
-	field_separator := fp.string('field_separator', `t`, '', 'use <string> instead of non-blank to blank transition')
-	temp_dir := fp.string('temporary-directory', `T`, '',
-		'use <string> for temporaries, not \${TMPDIR} or /tmp;\n${flag.space}' +
-		'multiple options specify multiple directories')
-	parallel := fp.int('parallel', ` `, 0, 'change the number of sorts run concurrently to <int>')
 	unique := fp.bool('unique', `u`, false, 'with -c, check for strict ordering;\n${flag.space}' +
 		'without -c, output only the first of an equal run')
 	zero_terminated := fp.bool('zero-terminated', `z`, false, 'line delimiter is NUL, not newline\n')
@@ -142,26 +114,15 @@ fn get_options() Options {
 		month_sort: month_sort
 		human_numeric_sort: human_numeric_sort
 		numeric_sort: numeric_sort
-		random_sort: random_sort
-		random_source: random_source
 		reverse: reverse
 		sort_word: sort_word
 		version_sort: version_sort
 		// other options
-		batch_size: batch_size
 		check_diagnose: check_diagnose
 		check_quiet: check_quiet
-		compress_prog: compress_prog
-		debug: debug
-		files0_from: files0_from
 		sort_key: sort_key
 		merge: merge
 		output_file: output_file
-		stable: stable
-		buffer_size: buffer_size
-		field_separator: field_separator
-		temp_dir: temp_dir
-		parallel: parallel
 		unique: unique
 		zero_terminated: zero_terminated
 		files: scan_files_arg(files)
