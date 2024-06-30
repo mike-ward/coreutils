@@ -27,6 +27,11 @@ fn sort(options Options) []string {
 
 fn do_sort(file string, options Options) []string {
 	mut lines := os.read_lines(file) or { exit_error(err.msg()) }
+	original := if options.check_diagnose || options.check_quiet {
+		lines.clone()
+	} else {
+		[]string{}
+	}
 	match true {
 		// order matters here
 		options.numeric { sort_general_numeric(mut lines, options) }
@@ -38,6 +43,19 @@ fn do_sort(file string, options Options) []string {
 	}
 	if options.unique {
 		lines = arrays.distinct(lines)
+	}
+	if original.len > 0 {
+		if lines != original {
+			if options.check_diagnose {
+				println('sort: not sorted')
+			}
+			exit(1)
+		} else {
+			if options.check_diagnose {
+				println('sort: already sorted')
+			}
+			exit(0)
+		}
 	}
 	return lines
 }

@@ -12,7 +12,6 @@ struct Options {
 	ignore_non_printing   bool
 	numeric               bool
 	reverse               bool
-	version_sort          bool
 	// other optoins
 	check_diagnose bool
 	check_quiet    bool
