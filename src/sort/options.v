@@ -15,7 +15,7 @@ struct Options {
 	// other optoins
 	check_diagnose bool
 	check_quiet    bool
-	sort_key       string
+	sort_keys      []string
 	merge          bool
 	output_file    string
 	unique         bool
@@ -42,7 +42,7 @@ fn get_options() Options {
 
 	check_diagnose := fp.bool('', `c`, false, 'check for sorted input; do not sort')
 	check_quiet := fp.bool('', `C`, false, 'like -c, but do not report first bad line')
-	sort_key := fp.string('key', `k`, '', 'sort via a key; <string> gives location and type')
+	sort_keys := fp.string_multi('key', `k`, 'sort via a key(s); <string> gives location and type')
 	merge := fp.bool('merge', `m`, false, 'merge already sorted files; do not sort')
 	output_file := fp.string('output', `o`, '', 'write result to FILE instead of standard output')
 	unique := fp.bool('unique', `u`, false, 'with -c, check for strict ordering;\n${flag.space}' +
@@ -99,7 +99,7 @@ fn get_options() Options {
 		// other options
 		check_diagnose: check_diagnose
 		check_quiet: check_quiet
-		sort_key: sort_key
+		sort_keys: sort_keys
 		merge: merge
 		output_file: output_file
 		unique: unique
