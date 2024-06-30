@@ -1,5 +1,6 @@
 import os
 import arrays
+import strconv
 
 const space = ` `
 const tab = `\t`
@@ -27,8 +28,9 @@ fn sort(options Options) []string {
 fn do_sort(file string, options Options) []string {
 	mut lines := os.read_lines(file) or { exit_error(err.msg()) }
 	match true {
-		options.ignore_case { sort_ignore_case(mut lines, options) }
+		// order matters here
 		options.numeric { sort_general_numeric(mut lines, options) }
+		options.ignore_case { sort_ignore_case(mut lines, options) }
 		options.dictionary_order { sort_dictionary_order(mut lines, options) }
 		options.ignore_non_printing { sort_ignore_non_printing(mut lines, options) }
 		options.ignore_leading_blanks { sort_ignore_leading_blanks(mut lines, options) }
@@ -99,6 +101,33 @@ fn is_dictionary_char(e u8) u8 {
 // - Finite numbers in ascending numeric order (with -0 and +0 equal).
 // - Plus infinity
 fn sort_general_numeric(mut lines []string, options Options) {
+	cmp := if options.reverse { compare_strings_reverse } else { compare_strings }
+	lines.sort_with_compare(fn [cmp, options] (a &string, b &string) int {
+		numeric_a, rest_a := numeric_rest(a)
+		numeric_b, rest_b := numeric_rest(b)
+		numeric_diff := if options.reverse { numeric_b - numeric_a } else { numeric_a - numeric_b }
+		return if numeric_diff != 0 {
+			if numeric_diff > 0 { 1 } else { -1 }
+		} else {
+			cmp(rest_a, rest_b)
+		}
+	})
+}
+
+const minus_infinity = f64(-0xFFFFFFFFFFFFFFF)
+
+fn numeric_rest(s string) (f64, string) {
+	mut num := minus_infinity
+	mut rest := s
+	for i := 0; i < s.len; i++ {
+		c := s[i]
+		if c.is_digit() || c == strconv.c_dpoint {
+			continue
+		}
+		num = strconv.atof64(s[0..i]) or { minus_infinity }
+		rest = s[i..].clone()
+	}
+	return num, rest
 }
 
 // This option has no effect if the stronger --dictionary-order (-d) option

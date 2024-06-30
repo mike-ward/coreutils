@@ -6,6 +6,7 @@ const test_a = os.temp_dir() + '/test_a.txt'
 const test_b = os.temp_dir() + '/test_b.txt'
 const test_c = os.temp_dir() + '/test_c.txt'
 const test_d = os.temp_dir() + '/test_d.txt'
+const test_e = os.temp_dir() + '/test_e.txt'
 
 fn testsuite_begin() {
 	create_test_data()
@@ -36,6 +37,12 @@ fn create_test_data() {
 		'\xf2 for all good men',
 		'\xf3 to come to the aid',
 		'\xf4 of their country',
+	]) or {}
+	os.write_lines(test_e, [
+		'100.1 Now is the time',
+		'50.2 for all good men',
+		'to come to the aid',
+		'-24.3 of their country',
 	]) or {}
 }
 
@@ -169,5 +176,32 @@ fn test_non_printing_reverse() {
 		'\xf4 of their country',
 		'\xf2 for all good men',
 		'\xf1 Now is the time',
+	]
+}
+
+fn test_numeric() {
+	options := Options{
+		numeric: true
+		files: [test_e]
+	}
+	assert sort(options) == [
+		'to come to the aid',
+		'-24.3 of their country',
+		'50.2 for all good men',
+		'100.1 Now is the time',
+	]
+}
+
+fn test_numeric_reverse() {
+	options := Options{
+		numeric: true
+		reverse: true
+		files: [test_e]
+	}
+	assert sort(options) == [
+		'100.1 Now is the time',
+		'50.2 for all good men',
+		'-24.3 of their country',
+		'to come to the aid',
 	]
 }
