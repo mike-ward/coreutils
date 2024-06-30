@@ -27,12 +27,12 @@ fn sort(options Options) []string {
 fn do_sort(file string, options Options) []string {
 	mut lines := os.read_lines(file) or { exit_error(err.msg()) }
 	match true {
-		options.ignore_case { lines.sort_ignore_case() }
+		options.ignore_case { sort_ignore_case(mut lines, options) }
 		options.numeric { sort_general_numeric(mut lines, options) }
 		options.dictionary_order { sort_dictionary_order(mut lines, options) }
 		options.ignore_non_printing { sort_ignore_non_printing(mut lines, options) }
 		options.ignore_leading_blanks { sort_ignore_leading_blanks(mut lines, options) }
-		else { lines.sort() }
+		else { sort_lines(mut lines, options) }
 	}
 	if options.unique {
 		lines = arrays.distinct(lines)
@@ -40,21 +40,35 @@ fn do_sort(file string, options Options) []string {
 	return lines
 }
 
-// Ignore leading blanks when finding sort keys in each line.
-//  By default a blank is a space or a tab
-fn sort_ignore_leading_blanks(mut lines []string, options Options) {
+fn sort_lines(mut lines []string, options Options) {
 	cmp := if options.reverse { compare_strings_reverse } else { compare_strings }
 	lines.sort_with_compare(fn [cmp] (a &string, b &string) int {
 		return cmp(a, b)
 	})
 }
 
-fn trim_leading_spaces(s string) string {
-	return s.trim_left(' \n\t\v\f\r')
-}
-
 fn compare_strings_reverse(a &string, b &string) int {
 	return compare_strings(b, a)
+}
+
+fn sort_ignore_case(mut lines []string, options Options) {
+	lines.sort_ignore_case()
+	if options.reverse {
+		lines.reverse_in_place()
+	}
+}
+
+// Ignore leading blanks when finding sort keys in each line.
+//  By default a blank is a space or a tab
+fn sort_ignore_leading_blanks(mut lines []string, options Options) {
+	cmp := if options.reverse { compare_strings_reverse } else { compare_strings }
+	lines.sort_with_compare(fn [cmp] (a &string, b &string) int {
+		return cmp(trim_leading_spaces(a), trim_leading_spaces(b))
+	})
+}
+
+fn trim_leading_spaces(s string) string {
+	return s.trim_left(' \n\t\v\f\r')
 }
 
 // Sort in phone directory order: ignore all characters except letters, digits
@@ -99,5 +113,5 @@ fn sort_ignore_non_printing(mut lines []string, options Options) {
 }
 
 fn is_printable(e u8) u8 {
-	return if e >= u8(` `) || e <= u8(`~`) { e } else { space }
+	return if e >= u8(` `) && e <= u8(`~`) { e } else { space }
 }
