@@ -74,8 +74,9 @@ fn parse_sort_key(k string) SortKey {
 
 	// column
 	if k[i] == `.` {
+		i += 1
 		start := i
-		for i++; i < k.len; i++ {
+		for ; i < k.len; i++ {
 			if k[i].is_digit() {
 				continue
 			}
@@ -102,17 +103,20 @@ fn parse_sort_key(k string) SortKey {
 	}
 
 	if i < k.len && k[i] == `,` {
+		i += 1
+		mut start := i
 		for ; i < k.len; i++ {
 			if k[i].is_digit() {
 				continue
 			}
-			f2 = strconv.atoi(k[0..i]) or { exit_error(err.msg()) }
+			f2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
 			break
 		}
 
-		if k[i] == `.` {
-			start := i
-			for i++; i < k.len; i++ {
+		if i < k.len && k[i] == `.` {
+			i += 1
+			start = i
+			for ; i < k.len; i++ {
 				if k[i].is_digit() {
 					continue
 				}
