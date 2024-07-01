@@ -34,6 +34,7 @@ fn do_sort(file string, options Options) []string {
 	}
 	match true {
 		// order matters here
+		options.sort_keys.len > 0 { sort_key(mut lines, options) }
 		options.numeric { sort_general_numeric(mut lines, options) }
 		options.ignore_case { sort_ignore_case(mut lines, options) }
 		options.dictionary_order { sort_dictionary_order(mut lines, options) }

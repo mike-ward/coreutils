@@ -13,13 +13,14 @@ struct Options {
 	numeric               bool
 	reverse               bool
 	// other optoins
-	check_diagnose bool
-	check_quiet    bool
-	sort_keys      []string
-	merge          bool
-	output_file    string
-	unique         bool
-	files          []string
+	check_diagnose  bool
+	check_quiet     bool
+	sort_keys       []string
+	field_separator string
+	merge           bool
+	output_file     string
+	unique          bool
+	files           []string
 }
 
 fn get_options() Options {
@@ -44,6 +45,7 @@ fn get_options() Options {
 	check_quiet := fp.bool('', `C`, false, 'like -c, but do not report first bad line')
 	sort_keys := fp.string_multi('key', `k`, 'sort via a key(s); <string> gives location and type')
 	merge := fp.bool('merge', `m`, false, 'merge already sorted files; do not sort')
+	field_separator := fp.string('', `t`, ' ', 'use <string> as field separator')
 	output_file := fp.string('output', `o`, '', 'write result to FILE instead of standard output')
 	unique := fp.bool('unique', `u`, false, 'with -c, check for strict ordering;\n${flag.space}' +
 		'without -c, output only the first of an equal run')
@@ -100,6 +102,7 @@ fn get_options() Options {
 		check_diagnose: check_diagnose
 		check_quiet: check_quiet
 		sort_keys: sort_keys
+		field_separator: field_separator
 		merge: merge
 		output_file: output_file
 		unique: unique
