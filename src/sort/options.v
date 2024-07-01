@@ -37,8 +37,14 @@ fn get_options() Options {
 	ignore_case := fp.bool('ignore-case', `f`, false, 'fold lower case to upper case characters')
 	ignore_non_printing := fp.bool('ignore-non-printing', `i`, false, 'consider only printable characters')
 	numeric := fp.bool('numeric-sort', `n`, false,
-		'compare according to string numerical value\n${flag.space}' +
-		"see 'Sort numerically:' below")
+		'Restrict the sort key to an initial numeric\n${flag.space}' +
+		'string, consisting of optional <blank> characters,\n${flag.space}' +
+		'optional <hyphen-minus> character, and zero or\n${flag.space}' +
+		'more digits with an optional radix character and\n${flag.space}' +
+		'thousands separators (as defined in the current\n${flag.space}' +
+		'locale), which shall be sorted by arithmetic\n${flag.space}' +
+		'value. An empty digit string shall be treated as\n${flag.space}' +
+		'zero. Leading zeros and signs on zeros shall not\n${flag.space}' + 'affect ordering.')
 	reverse := fp.bool('reverse', `r`, false, 'reverse the result of comparisons\n\nOther options:')
 
 	check_diagnose := fp.bool('', `c`, false, 'check for sorted input; do not sort')
