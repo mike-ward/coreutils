@@ -24,19 +24,17 @@ fn sort_key(mut lines []string, options Options) {
 		sort_keys << parse_sort_key(sort_key)
 	}
 
-	println(sort_keys)
-
 	lines.sort_with_compare(fn [sort_keys, options] (a &string, b &string) int {
 		for key in sort_keys {
 			aa := find_field(a, key, options)
 			bb := find_field(b, key, options)
 			// println('${aa}, ${bb}')
 			result := match key.sort_option {
-				.numeric { 0 }
-				.leading { 0 }
-				.dictionary { 0 }
-				.ignore_case { 0 }
-				.ignore_non_printing { 0 }
+				.numeric { compare_numeric(aa, bb) }
+				.leading { compare_leading(aa, bb) }
+				.dictionary { compare_dictionary(aa, bb) }
+				.ignore_case { compare_ignore_case(aa, bb) }
+				.ignore_non_printing { compare_ignore_non_printing(aa, bb) }
 				.reverse { compare_strings(bb, aa) }
 				else { compare_strings(aa, bb) }
 			}
@@ -46,6 +44,42 @@ fn sort_key(mut lines []string, options Options) {
 		}
 		return compare_strings(a, b)
 	})
+}
+
+fn compare_numeric(a &string, b &string) int {
+	af, ar := numeric_rest(a)
+	bf, br := numeric_rest(b)
+	diff := af - bf
+	return if diff != 0 {
+		match diff > 0 {
+			true { 1 }
+			else { -1 }
+		}
+	} else {
+		compare_strings(ar, br)
+	}
+}
+
+fn compare_leading(a &string, b &string) int {
+	aa := trim_leading_spaces(a)
+	bb := trim_leading_spaces(b)
+	return compare_strings(aa, bb)
+}
+
+fn compare_dictionary(a &string, b &string) int {
+	aa := a.bytes().map(is_dictionary_char).bytestr()
+	bb := b.bytes().map(is_dictionary_char).bytestr()
+	return compare_strings(aa, bb)
+}
+
+fn compare_ignore_case(a &string, b &string) int {
+	return compare_strings(a.to_upper(), b.to_upper())
+}
+
+fn compare_ignore_non_printing(a &string, b &string) int {
+	aa := a.bytes().map(is_printable).bytestr()
+	bb := b.bytes().map(is_printable).bytestr()
+	return compare_strings(aa, bb)
 }
 
 fn find_field(s string, key SortKey, options Options) string {
