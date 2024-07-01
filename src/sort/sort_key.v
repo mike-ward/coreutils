@@ -1,6 +1,6 @@
 import strconv
 
-enum SortOption {
+enum SortType {
 	ascii
 	numeric
 	leading
@@ -11,11 +11,11 @@ enum SortOption {
 }
 
 struct SortKey {
-	f1          int
-	c1          int
-	f2          int
-	c2          int
-	sort_option SortOption
+	f1        int
+	c1        int
+	f2        int
+	c2        int
+	sort_type SortType
 }
 
 fn sort_key(mut lines []string, options Options) {
@@ -29,7 +29,7 @@ fn sort_key(mut lines []string, options Options) {
 			aa := find_field(a, key, options)
 			bb := find_field(b, key, options)
 			// println('${aa}, ${bb}')
-			result := match key.sort_option {
+			result := match key.sort_type {
 				.numeric { compare_numeric(aa, bb) }
 				.leading { compare_leading(aa, bb) }
 				.dictionary { compare_dictionary(aa, bb) }
@@ -84,19 +84,28 @@ fn compare_ignore_non_printing(a &string, b &string) int {
 
 fn find_field(s string, key SortKey, options Options) string {
 	parts := s.split(options.field_separator)
-	start := if key.f1 < parts.len { key.f1 } else { 0 }
-	end := if key.f2 >= key.f1 && key.f2 < parts.len { key.f2 } else { parts.len - 1 }
-	join := if start == end { parts[start] } else { parts[start..end].join('') }
-	begin := join[key.c1..]
-	field := if key.c2 > 0 { begin[..-key.c2] } else { begin }
+	f1 := key.f1 - 1
+	c1 := if key.c1 > 0 { key.c1 - 1 } else { 0 }
+	f2 := key.f2 // from the end, don't subtrace 1
+	c2 := key.c2 // from the end, don't subtrace 1
+	start := if f1 < parts.len { f1 } else { 0 }
+	end := if f2 >= f1 && f2 < parts.len { f2 } else { parts.len }
+	join := parts[start..end].join('')
+	begin := join[c1..]
+	field := if c2 > 0 {
+		c := begin.len - c2
+		begin[..c]
+	} else {
+		begin
+	}
 	return field
 }
 
 fn parse_sort_key(k string) SortKey {
 	mut i := 0
-	mut f1 := -1
+	mut f1 := 0
 	mut c1 := 0
-	mut f2 := -1
+	mut f2 := 0
 	mut c2 := 0
 	mut start := 0
 
@@ -108,7 +117,7 @@ fn parse_sort_key(k string) SortKey {
 		}
 	}
 
-	if f1 == -1 {
+	if f1 == 0 {
 		f1 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
 	}
 
@@ -129,19 +138,19 @@ fn parse_sort_key(k string) SortKey {
 	}
 
 	// sort option
-	sort_type := if i < k.len { k[i] } else { space }
+	sort_t := if i < k.len { k[i] } else { space }
 
-	sort_option := match sort_type {
-		`b` { SortOption.leading }
-		`d` { SortOption.dictionary }
-		`f` { SortOption.ignore_case }
-		`i` { SortOption.ignore_non_printing }
-		`n` { SortOption.numeric }
-		`r` { SortOption.reverse }
-		else { SortOption.ascii }
+	sort_type := match sort_t {
+		`b` { SortType.leading }
+		`d` { SortType.dictionary }
+		`f` { SortType.ignore_case }
+		`i` { SortType.ignore_non_printing }
+		`n` { SortType.numeric }
+		`r` { SortType.reverse }
+		else { SortType.ascii }
 	}
 
-	if sort_option != .ascii {
+	if sort_type != .ascii {
 		i += 1
 	}
 
@@ -155,7 +164,7 @@ fn parse_sort_key(k string) SortKey {
 			}
 		}
 
-		if f2 == -1 {
+		if f2 == 0 {
 			f2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
 		}
 
@@ -180,6 +189,6 @@ fn parse_sort_key(k string) SortKey {
 		c1: c1
 		f2: f2
 		c2: c2
-		sort_option: sort_option
+		sort_type: sort_type
 	}
 }

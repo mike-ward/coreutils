@@ -16,7 +16,7 @@ struct Options {
 	check_diagnose  bool
 	check_quiet     bool
 	sort_keys       []string
-	field_separator string
+	field_separator string = ' '
 	merge           bool
 	output_file     string
 	unique          bool
