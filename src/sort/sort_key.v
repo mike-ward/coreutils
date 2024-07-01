@@ -24,6 +24,8 @@ fn sort_key(mut lines []string, options Options) {
 		sort_keys << parse_sort_key(sort_key)
 	}
 
+	println(sort_keys)
+
 	lines.sort_with_compare(fn [sort_keys, options] (a &string, b &string) int {
 		for key in sort_keys {
 			aa := find_field(a, key, options)
@@ -62,26 +64,33 @@ fn parse_sort_key(k string) SortKey {
 	mut c1 := 0
 	mut f2 := -1
 	mut c2 := 0
+	mut start := 0
 
 	// field
 	for ; i < k.len; i++ {
-		if k[i].is_digit() {
-			continue
+		if !k[i].is_digit() {
+			f1 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
+			break
 		}
-		f1 = strconv.atoi(k[0..i]) or { exit_error(err.msg()) }
-		break
+	}
+
+	if f1 == -1 {
+		f1 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
 	}
 
 	// column
-	if k[i] == `.` {
+	if i < k.len && k[i] == `.` {
 		i += 1
-		start := i
+		start = i
 		for ; i < k.len; i++ {
-			if k[i].is_digit() {
-				continue
+			if !k[i].is_digit() {
+				c1 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
+				break
 			}
+		}
+
+		if c1 == 0 {
 			c1 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
-			break
 		}
 	}
 
@@ -104,24 +113,30 @@ fn parse_sort_key(k string) SortKey {
 
 	if i < k.len && k[i] == `,` {
 		i += 1
-		mut start := i
+		start = i
 		for ; i < k.len; i++ {
-			if k[i].is_digit() {
-				continue
+			if !k[i].is_digit() {
+				f2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
+				break
 			}
+		}
+
+		if f2 == -1 {
 			f2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
-			break
 		}
 
 		if i < k.len && k[i] == `.` {
 			i += 1
 			start = i
 			for ; i < k.len; i++ {
-				if k[i].is_digit() {
-					continue
+				if !k[i].is_digit() {
+					c2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
+					break
 				}
+			}
+
+			if c2 == 0 {
 				c2 = strconv.atoi(k[start..i]) or { exit_error(err.msg()) }
-				break
 			}
 		}
 	}
