@@ -3,6 +3,7 @@ module main
 import os
 
 const test_aa = os.temp_dir() + '/test_aa.txt'
+const test_bb = os.temp_dir() + '/test_bb.txt'
 
 fn testsuite_begin() {
 	create_test_data()
@@ -14,6 +15,12 @@ fn create_test_data() {
 		'for all good men',
 		'to come to the aid',
 		'of their country',
+	]) or {}
+	os.write_lines(test_bb, [
+		'4. Now is the time',
+		'3. for all good men',
+		'2. to come to the aid',
+		'1. of their country',
 	]) or {}
 }
 
@@ -119,5 +126,18 @@ fn test_sort_full_spec() {
 		'to come to the aid',
 		'for all good men',
 		'Now is the time',
+	]
+}
+
+fn test_sort_numeric_simple() {
+	options := Options{
+		sort_keys: ['1n']
+		files: [test_bb]
+	}
+	assert sort(options) == [
+		'1. of their country',
+		'2. to come to the aid',
+		'3. for all good men',
+		'4. Now is the time',
 	]
 }

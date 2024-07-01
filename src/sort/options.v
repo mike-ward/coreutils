@@ -57,36 +57,9 @@ fn get_options() Options {
 		field; both are origin 1, and the stop position defaults to the
 		line's end.  If neither -t nor -b is in effect, characters in a
 		field are counted from the beginning of the preceding whitespace.
-		OPTS is one or more single-letter ordering options [bdfgiMhnRrV],
-		which override global ordering options for that key.  If no key
-		is given, use the entire line as the key.
-
-		SIZE may be followed by the following multiplicative suffixes: %
-		1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E,
-		Z, Y, R, Q.
-
-		*** WARNING *** The locale specified by the environment affects
-		sort order.  Set LC_ALL=C to get the traditional sort order that
-		uses native byte values.
-
-		Sort numerically: The number begins each line and consists of
-		optional blanks, an optional ‘-’ sign, and zero or more digits
-		possibly separated by thousands separators, optionally followed
-		by a decimal-point character and zero or more digits. An empty
-		number is treated as ‘0’. Signs on zeros and leading zeros do not
-		affect ordering.
-
-		Comparison is exact; there is no rounding error.
-
-		The LC_CTYPE locale specifies which characters are blanks and the
-		LC_NUMERIC locale specifies the thousands separator and
-		decimal-point character. In the C locale, spaces and tabs are
-		blanks, there is no thousands separator, and ‘.’ is the decimal
-		point.
-
-		Neither a leading ‘+’ nor exponential notation is recognized. To
-		compare such strings numerically, use the --general-numeric-sort
-		(-g) option.".trim_indent())
+		OPTS is one or more single-letter ordering options [bdfir], which
+		override global ordering options for that key. If no key is
+		given, use the entire line as the key.".trim_indent())
 
 	fp.footer(common.coreutils_footer())
 	files := fp.finalize() or { exit_error(err.msg()) }
